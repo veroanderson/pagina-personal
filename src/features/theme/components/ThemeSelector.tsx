@@ -1,6 +1,6 @@
 'use client';
 
-import type { ButtonHTMLAttributes } from 'react';
+import React, { type ButtonHTMLAttributes } from 'react';
 import { cn } from '@/shared/ui';
 import { useTheme } from '../hooks/useTheme';
 import type { ThemePreference } from '../types/theme';
