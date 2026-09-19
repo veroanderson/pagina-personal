@@ -4,22 +4,26 @@ module.exports = {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/features/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/shared/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {
-        // Tinted neutrals - Patagonia Cold Editorial palette
-        patagonia: {
-          bg: '#0b0f19',         // Fondo principal con 4% tinte azul/verde frío
-          panel: '#121824',      // Superficie de panel continuo
-          hover: '#192233',      // Superficie hover sutil
-          border: '#232f45',     // Bordes tenues (divide-y)
-          muted: '#8c9cb8',      // Texto secundario desaturado
-          fg: '#e4e9f2',         // Texto principal (blanco lino tenue)
-          accent: '#4a7c82',     // Verde frío patagónico
-          bordo: '#6b303b',      // Bordó frío desaturado para detalles/badges
-          earth: '#5c5248',      // Tierra desaturado
-        }
+        canvas: 'rgb(var(--color-canvas) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
+        'surface-raised': 'rgb(var(--color-surface-raised) / <alpha-value>)',
+        'surface-hover': 'rgb(var(--color-surface-hover) / <alpha-value>)',
+        line: 'rgb(var(--color-line) / <alpha-value>)',
+        ink: 'rgb(var(--color-ink) / <alpha-value>)',
+        'ink-muted': 'rgb(var(--color-ink-muted) / <alpha-value>)',
+        accent: 'rgb(var(--color-accent) / <alpha-value>)',
+        'accent-contrast': 'rgb(var(--color-accent-contrast) / <alpha-value>)',
+        success: 'rgb(var(--color-success) / <alpha-value>)',
+        warning: 'rgb(var(--color-warning) / <alpha-value>)',
+        danger: 'rgb(var(--color-danger) / <alpha-value>)',
+        overlay: 'rgb(var(--color-overlay) / <alpha-value>)',
       },
       fontFamily: {
         serif: ['var(--font-serif)', 'Cormorant Garamond', 'Georgia', 'serif'],
@@ -29,8 +33,12 @@ module.exports = {
       letterSpacing: {
         widest: '0.25em',
         editorial: '0.15em',
-      }
+      },
+      boxShadow: {
+        panel: '0 18px 40px rgb(var(--color-shadow) / 0.12)',
+        modal: '0 24px 70px rgb(var(--color-shadow) / 0.24)',
+      },
     },
   },
   plugins: [],
-}
+};

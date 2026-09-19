@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Alert, Button, Input } from '@/shared/ui';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -41,9 +42,9 @@ export default function LoginForm() {
   return (
     <form onSubmit={submit} className="mt-6 space-y-4">
       <label className="block space-y-1">
-        <span className="text-sm font-medium text-patagonia-fg">Contraseña</span>
+        <span className="text-sm font-medium text-ink">Contraseña</span>
         <div className="relative">
-          <input
+          <Input
             type={showPassword ? 'text' : 'password'}
             name="password"
             autoComplete="current-password"
@@ -51,12 +52,12 @@ export default function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="Ingresá la clave de admin"
-            className="w-full rounded border border-patagonia-border bg-patagonia-bg pl-3 pr-10 py-2.5 text-base text-patagonia-fg placeholder-patagonia-muted focus:border-patagonia-accent focus:outline-none"
+            className="pr-10 py-2.5"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-patagonia-muted hover:text-patagonia-fg text-sm p-1"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink text-sm p-1"
             title={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
           >
             {showPassword ? '👁️' : '👁️‍🗨️'}
@@ -65,18 +66,18 @@ export default function LoginForm() {
       </label>
 
       {error && (
-        <p className="text-sm text-red-400 bg-patagonia-bordo/20 p-2.5 rounded border border-patagonia-bordo">
-          {error}
-        </p>
+          <Alert tone="danger" className="p-2.5">
+            {error}
+          </Alert>
       )}
 
-      <button
+      <Button
         type="submit"
         disabled={pending || !password}
-        className="w-full rounded bg-patagonia-accent px-4 py-3 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 transition shadow-md"
+        className="w-full shadow-panel"
       >
         {pending ? 'Ingresando...' : 'Ingresar'}
-      </button>
+      </Button>
     </form>
   );
 }

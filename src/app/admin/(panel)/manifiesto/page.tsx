@@ -89,16 +89,16 @@ export default function AdminManifiestoPage() {
   };
 
   if (loading) {
-    return <div className="p-4 text-patagonia-muted">Cargando Manifiesto...</div>;
+    return <div className="p-4 text-ink-muted">Cargando Manifiesto...</div>;
   }
 
   return (
     <div className="space-y-8 max-w-4xl">
       <div>
-        <h1 className="font-serif-editorial text-3xl font-normal text-patagonia-fg">
+        <h1 className="font-serif-editorial text-3xl font-normal text-ink">
           Manifiesto (Artist Statement)
         </h1>
-        <p className="text-sm text-patagonia-muted mt-1">
+        <p className="text-sm text-ink-muted mt-1">
           Texto de bienvenida e imágenes de fondo/textura para la página principal del portfolio.
         </p>
       </div>
@@ -107,8 +107,8 @@ export default function AdminManifiestoPage() {
         <div
           className={`p-4 rounded border text-sm ${
             message.type === 'success'
-              ? 'bg-patagonia-accent/10 border-patagonia-accent text-patagonia-accent'
-              : 'bg-patagonia-bordo/10 border-patagonia-bordo text-red-300'
+              ? 'bg-accent/10 border-accent text-accent'
+              : 'bg-danger/10 border-danger text-danger'
           }`}
         >
           {message.text}
@@ -117,24 +117,24 @@ export default function AdminManifiestoPage() {
 
       <form onSubmit={handleSave} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-patagonia-fg mb-2">
+          <label className="block text-sm font-medium text-ink mb-2">
             Texto del Manifiesto (Soporta Markdown)
           </label>
           <textarea
             rows={12}
             value={statementText}
             onChange={(e) => setStatementText(e.target.value)}
-            className="w-full rounded border border-patagonia-border bg-patagonia-panel p-4 text-base text-patagonia-fg placeholder-patagonia-muted focus:border-patagonia-accent focus:outline-none"
+            className="w-full rounded border border-line bg-surface p-4 text-base text-ink placeholder:text-ink-muted focus:border-accent focus:outline-none"
             placeholder="Escribí acá el manifiesto o declaración artística..."
             required
           />
         </div>
 
         {/* Uploads de imágenes grandes de textura */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-patagonia-border pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-line pt-6">
           {/* Imagen 1 */}
-          <div className="space-y-3 bg-patagonia-panel p-4 rounded border border-patagonia-border">
-            <span className="block text-sm font-medium text-patagonia-fg">
+          <div className="space-y-3 bg-surface p-4 rounded border border-line">
+            <span className="block text-sm font-medium text-ink">
               Imagen Principal de Textura (Opcional)
             </span>
 
@@ -143,7 +143,7 @@ export default function AdminManifiestoPage() {
                 <img
                   src={imageUrl1}
                   alt="Manifiesto 1"
-                  className="h-40 w-full object-cover rounded border border-patagonia-border"
+                  className="h-40 w-full object-cover rounded border border-line"
                 />
                 <button
                   type="button"
@@ -151,13 +151,13 @@ export default function AdminManifiestoPage() {
                     setImageUrl1(null);
                     setImagePath1(null);
                   }}
-                  className="text-xs text-red-400 hover:underline"
+                  className="text-xs text-danger hover:underline"
                 >
                   Quitar imagen
                 </button>
               </div>
             ) : (
-              <div className="h-40 flex items-center justify-center border border-dashed border-patagonia-border rounded text-xs text-patagonia-muted">
+              <div className="h-40 flex items-center justify-center border border-dashed border-line rounded text-xs text-ink-muted">
                 Sin imagen seleccionada
               </div>
             )}
@@ -169,14 +169,14 @@ export default function AdminManifiestoPage() {
               onChange={(e) => {
                 if (e.target.files?.[0]) handleImageUpload(e.target.files[0], 1);
               }}
-              className="text-xs text-patagonia-muted file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:bg-patagonia-hover file:text-patagonia-fg hover:file:bg-patagonia-border"
+              className="text-xs text-ink-muted file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:bg-surface-hover file:text-ink hover:file:bg-line"
             />
-            {uploadingImg1 && <span className="text-xs text-patagonia-accent">Subiendo...</span>}
+            {uploadingImg1 && <span className="text-xs text-accent">Subiendo...</span>}
           </div>
 
           {/* Imagen 2 */}
-          <div className="space-y-3 bg-patagonia-panel p-4 rounded border border-patagonia-border">
-            <span className="block text-sm font-medium text-patagonia-fg">
+          <div className="space-y-3 bg-surface p-4 rounded border border-line">
+            <span className="block text-sm font-medium text-ink">
               Segunda Imagen de Textura (Opcional)
             </span>
 
@@ -185,7 +185,7 @@ export default function AdminManifiestoPage() {
                 <img
                   src={imageUrl2}
                   alt="Manifiesto 2"
-                  className="h-40 w-full object-cover rounded border border-patagonia-border"
+                  className="h-40 w-full object-cover rounded border border-line"
                 />
                 <button
                   type="button"
@@ -193,13 +193,13 @@ export default function AdminManifiestoPage() {
                     setImageUrl2(null);
                     setImagePath2(null);
                   }}
-                  className="text-xs text-red-400 hover:underline"
+                  className="text-xs text-danger hover:underline"
                 >
                   Quitar imagen
                 </button>
               </div>
             ) : (
-              <div className="h-40 flex items-center justify-center border border-dashed border-patagonia-border rounded text-xs text-patagonia-muted">
+              <div className="h-40 flex items-center justify-center border border-dashed border-line rounded text-xs text-ink-muted">
                 Sin imagen seleccionada
               </div>
             )}
@@ -211,9 +211,9 @@ export default function AdminManifiestoPage() {
               onChange={(e) => {
                 if (e.target.files?.[0]) handleImageUpload(e.target.files[0], 2);
               }}
-              className="text-xs text-patagonia-muted file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:bg-patagonia-hover file:text-patagonia-fg hover:file:bg-patagonia-border"
+              className="text-xs text-ink-muted file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:bg-surface-hover file:text-ink hover:file:bg-line"
             />
-            {uploadingImg2 && <span className="text-xs text-patagonia-accent">Subiendo...</span>}
+            {uploadingImg2 && <span className="text-xs text-accent">Subiendo...</span>}
           </div>
         </div>
 
@@ -221,7 +221,7 @@ export default function AdminManifiestoPage() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full sm:w-auto px-8 py-3 bg-patagonia-accent text-white font-medium text-sm rounded hover:opacity-90 transition disabled:opacity-50"
+            className="w-full sm:w-auto px-8 py-3 bg-accent text-accent-contrast font-medium text-sm rounded hover:opacity-90 transition disabled:opacity-50"
           >
             {saving ? 'Guardando...' : 'Guardar Manifiesto'}
           </button>

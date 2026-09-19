@@ -18,7 +18,7 @@ export default function LogoutButton() {
     <button
       onClick={logout}
       disabled={pending}
-      className="px-3 py-1.5 text-xs font-mono text-patagonia-muted hover:text-red-400 rounded border border-patagonia-border hover:bg-patagonia-hover transition disabled:opacity-50"
+      className="px-3 py-1.5 text-xs font-mono text-ink-muted hover:text-danger rounded border border-line hover:bg-surface-hover transition disabled:opacity-50"
     >
       {pending ? 'Saliendo...' : 'Cerrar sesión 🔒'}
     </button>

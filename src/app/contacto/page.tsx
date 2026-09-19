@@ -7,7 +7,7 @@ export const revalidate = 0;
 export default function ContactoPage() {
   return (
     <PublicLayout>
-      <Suspense fallback={<div className="p-8 text-patagonia-muted">Cargando formulario de contacto...</div>}>
+      <Suspense fallback={<div className="p-8 text-ink-muted">Cargando formulario de contacto...</div>}>
         <ContactoClient />
       </Suspense>
     </PublicLayout>

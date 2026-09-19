@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Alert, Button, Input, Select, Textarea } from '@/shared/ui';
 
 export default function ContactoClient() {
   const searchParams = useSearchParams();
@@ -69,25 +70,25 @@ export default function ContactoClient() {
     <div className="max-w-3xl space-y-10 lg:space-y-14">
       {/* Header */}
       <div className="space-y-3">
-        <span className="text-xs uppercase font-mono tracking-widest text-patagonia-accent">
+        <span className="text-xs uppercase font-mono tracking-widest text-accent">
           Contacto Directo · Adquisiciones y Prensa
         </span>
-        <h1 className="font-serif-editorial text-3xl lg:text-5xl tracking-editorial text-patagonia-fg font-normal leading-tight">
+        <h1 className="font-serif-editorial text-3xl lg:text-5xl tracking-editorial text-ink font-normal leading-tight">
           Contacto
         </h1>
-        <div className="w-16 h-0.5 bg-patagonia-accent/60"></div>
-        <p className="text-patagonia-muted text-base font-light pt-1">
+        <div className="w-16 h-0.5 bg-accent/60"></div>
+        <p className="text-ink-muted text-base font-light pt-1">
           Para consultas sobre disponibilidad de obras, exhibiciones o proyectos especiales.
         </p>
       </div>
 
       {artworkTitle && (
-        <div className="p-4 bg-patagonia-accent/10 border border-patagonia-accent/40 rounded text-sm text-patagonia-fg flex items-center justify-between">
+        <div className="p-4 bg-accent/10 border border-accent/40 rounded text-sm text-ink flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-patagonia-accent text-lg">✉</span>
+            <span className="text-accent text-lg">✉</span>
             <span>
               Consultando por la obra:{' '}
-              <strong className="font-serif-editorial text-lg text-white">
+              <strong className="font-serif-editorial text-lg text-accent-contrast">
                 "{decodeURIComponent(artworkTitle)}"
               </strong>
             </span>
@@ -96,43 +97,35 @@ export default function ContactoClient() {
       )}
 
       {message && (
-        <div
-          className={`p-4 rounded border text-sm ${
-            message.type === 'success'
-              ? 'bg-emerald-950/40 border-emerald-800 text-emerald-300'
-              : 'bg-patagonia-bordo/20 border-patagonia-bordo text-red-300'
-          }`}
-        >
+        <Alert tone={message.type === 'success' ? 'success' : 'danger'}>
           {message.text}
-        </div>
+        </Alert>
       )}
 
       {/* Contact Form */}
-      <form onSubmit={handleSubmit} className="space-y-6 bg-patagonia-panel p-6 lg:p-10 rounded-lg border border-patagonia-border shadow-xl">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-surface p-6 lg:p-10 rounded-lg border border-line shadow-panel">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-patagonia-fg mb-2">
+            <label className="block text-sm font-medium text-ink mb-2">
               Tu Nombre Completo *
             </label>
-            <input
+            <Input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded border border-patagonia-border bg-patagonia-bg p-3 text-base text-patagonia-fg placeholder-patagonia-muted focus:border-patagonia-accent focus:outline-none"
               placeholder="Nombre y Apellido"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-patagonia-fg mb-2">
+            <label className="block text-sm font-medium text-ink mb-2">
               Correo Electrónico *
             </label>
-            <input
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded border border-patagonia-border bg-patagonia-bg p-3 text-base text-patagonia-fg placeholder-patagonia-muted focus:border-patagonia-accent focus:outline-none"
               placeholder="tu@email.com"
               required
             />
@@ -140,42 +133,41 @@ export default function ContactoClient() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-patagonia-fg mb-2">
+          <label className="block text-sm font-medium text-ink mb-2">
             Tipo de Consulta
           </label>
-          <select
+          <Select
             value={requestType}
             onChange={(e) => setRequestType(e.target.value)}
-            className="w-full rounded border border-patagonia-border bg-patagonia-bg p-3 text-base text-patagonia-fg focus:border-patagonia-accent focus:outline-none"
           >
             <option value="Consulta sobre obra">Consulta sobre obra / Adquisición</option>
             <option value="Exhibición / Curaduría">Exhibición / Curaduría</option>
             <option value="Prensa / Entrevista">Prensa / Entrevista</option>
             <option value="Otro motivo">Otro motivo</option>
-          </select>
+          </Select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-patagonia-fg mb-2">
+          <label className="block text-sm font-medium text-ink mb-2">
             Mensaje o Detalles *
           </label>
-          <textarea
+          <Textarea
             rows={7}
             value={details}
             onChange={(e) => setDetails(e.target.value)}
-            className="w-full rounded border border-patagonia-border bg-patagonia-bg p-4 text-base text-patagonia-fg placeholder-patagonia-muted focus:border-patagonia-accent focus:outline-none"
             placeholder="Escribí acá tu consulta..."
             required
           />
         </div>
 
-        <button
+        <Button
           type="submit"
           disabled={submitting}
-          className="w-full py-4 bg-patagonia-accent text-white font-serif-editorial text-xl tracking-wide rounded hover:opacity-90 transition disabled:opacity-50 shadow-lg active:scale-98"
+          size="lg"
+          className="w-full font-serif-editorial text-xl tracking-wide shadow-panel active:scale-98"
         >
           {submitting ? 'Enviando mensaje...' : 'Enviar Consulta →'}
-        </button>
+        </Button>
       </form>
     </div>
   );

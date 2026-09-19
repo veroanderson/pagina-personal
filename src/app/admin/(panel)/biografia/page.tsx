@@ -44,16 +44,16 @@ export default function AdminBioPage() {
   };
 
   if (loading) {
-    return <div className="p-4 text-patagonia-muted">Cargando Biografía...</div>;
+    return <div className="p-4 text-ink-muted">Cargando Biografía...</div>;
   }
 
   return (
     <div className="space-y-8 max-w-4xl">
       <div>
-        <h1 className="font-serif-editorial text-3xl font-normal text-patagonia-fg">
+        <h1 className="font-serif-editorial text-3xl font-normal text-ink">
           Biografía y CV
         </h1>
-        <p className="text-sm text-patagonia-muted mt-1">
+        <p className="text-sm text-ink-muted mt-1">
           Edición directa de la trayectoria, premios, becas y exposiciones de Vero Anderson.
         </p>
       </div>
@@ -62,8 +62,8 @@ export default function AdminBioPage() {
         <div
           className={`p-4 rounded border text-sm ${
             message.type === 'success'
-              ? 'bg-patagonia-accent/10 border-patagonia-accent text-patagonia-accent'
-              : 'bg-patagonia-bordo/10 border-patagonia-bordo text-red-300'
+              ? 'bg-accent/10 border-accent text-accent'
+              : 'bg-danger/10 border-danger text-danger'
           }`}
         >
           {message.text}
@@ -72,14 +72,14 @@ export default function AdminBioPage() {
 
       <form onSubmit={handleSave} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-patagonia-fg mb-2">
+          <label className="block text-sm font-medium text-ink mb-2">
             Biografía / CV (Soporta Markdown)
           </label>
           <textarea
             rows={16}
             value={bioText}
             onChange={(e) => setBioText(e.target.value)}
-            className="w-full rounded border border-patagonia-border bg-patagonia-panel p-4 text-base font-mono text-patagonia-fg placeholder-patagonia-muted focus:border-patagonia-accent focus:outline-none"
+            className="w-full rounded border border-line bg-surface p-4 text-base font-mono text-ink placeholder:text-ink-muted focus:border-accent focus:outline-none"
             placeholder="# Vero Anderson&#10;*Artista Visual*&#10;&#10;### Formación..."
             required
           />
@@ -89,7 +89,7 @@ export default function AdminBioPage() {
           <button
             type="submit"
             disabled={saving}
-            className="px-8 py-3 bg-patagonia-accent text-white font-medium text-sm rounded hover:opacity-90 transition disabled:opacity-50"
+            className="px-8 py-3 bg-accent text-accent-contrast font-medium text-sm rounded hover:opacity-90 transition disabled:opacity-50"
           >
             {saving ? 'Guardando...' : 'Guardar Biografía'}
           </button>

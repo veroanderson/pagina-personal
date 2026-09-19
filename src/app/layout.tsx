@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, Caveat, Inter } from 'next/font/google';
+import { ThemeProvider, ThemeScript } from '@/features/theme';
 import './globals.css';
 
 const fontSerif = Cormorant_Garamond({
@@ -26,13 +27,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="es" className={`${fontSerif.variable} ${fontCursive.variable} ${fontSans.variable}`}>
-      <body className="bg-patagonia-bg text-patagonia-fg antialiased selection:bg-patagonia-accent/30 selection:text-white">
-        {children}
+    <html
+      lang="es"
+      className={`${fontSerif.variable} ${fontCursive.variable} ${fontSans.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <ThemeScript />
+      </head>
+      <body className="bg-canvas text-ink antialiased">
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
