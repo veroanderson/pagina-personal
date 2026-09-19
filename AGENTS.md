@@ -46,3 +46,40 @@ Este proyecto cuenta con la skill **`arquitectura-monolitica`** ubicada en `.ski
 5. La persistencia de contenido e imágenes queda en Supabase Database/Storage.
 
 La documentación completa está en `.skills/arquitectura-monolitica/` (`01-OVERVIEW.md` a `05-GOTCHAS-AND-TIPS.md` y la carpeta `template/`). Leer el documento relevante antes de cada tarea.
+
+## Organización feature-based y Clean Architecture
+
+Las nuevas features, refactors y fixes deben respetar una organización por feature dentro de `src/features/<feature>/`.
+
+Estructura recomendada:
+
+```text
+src/features/<feature>/
+├── components/   # componentes visuales propios de la feature
+├── hooks/        # hooks propios de la feature
+├── styles/       # estilos propios, solo cuando sean necesarios
+├── types/        # tipos propios, solo cuando sean necesarios
+├── services/     # casos de uso y lógica de aplicación
+└── infra/        # Supabase, APIs, persistencia y adaptadores externos
+```
+
+Reglas:
+
+- No crear carpetas vacías: cada subcarpeta debe existir solo si la feature la necesita.
+- El código nuevo debe vivir dentro de su feature, salvo componentes, utilidades o tipos realmente compartidos.
+- `components/` no debe contener lógica de persistencia ni acceso directo a infraestructura.
+- `services/` debe contener la lógica de aplicación y los casos de uso de la feature.
+- `infra/` debe encapsular Supabase, APIs externas, persistencia y detalles de integración.
+- Las dependencias deben apuntar hacia adentro: UI → servicios → infraestructura.
+- Los tipos de dominio no deben depender de tipos específicos de Supabase ni de la UI.
+- Las rutas de Next.js en `src/app/` deben mantenerse delgadas y componerse a partir de la feature correspondiente.
+- Antes de crear una abstracción en `shared/`, comprobar que es realmente compartida por al menos dos features.
+- No mover código existente durante un fix pequeño salvo que sea necesario para resolver el problema o evitar una inconsistencia clara.
+
+### Barrel exports
+
+- Cada feature debe exponer sus módulos públicos mediante barrel exports (`index.ts`) en los niveles donde ayuden a simplificar y ordenar los imports.
+- Preferir imports desde el barrel público de la feature, por ejemplo `@/features/contact` o `@/features/contact/components`, en vez de importar archivos internos desde otras partes del proyecto.
+- Mantener los barrels pequeños y explícitos: exportar únicamente la API pública de cada feature, no todos los detalles internos.
+- Los barrels no deben ocultar dependencias importantes ni crear ciclos de importación. Si aparece una dependencia circular, reorganizar los módulos en lugar de resolverla mediante exports indirectos.
+- Cada subcarpeta puede tener su propio `index.ts` cuando tenga una API pública coherente; no es obligatorio crear barrels para carpetas que solo contienen un archivo o detalles internos.
