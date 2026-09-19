@@ -1,0 +1,221 @@
+export type Database = {
+  public: {
+    Tables: {
+      manifesto: {
+        Row: {
+          id: number;
+          statement_text: string;
+          image_path_1: string | null;
+          image_path_2: string | null;
+        };
+        Insert: {
+          id?: number;
+          statement_text?: string;
+          image_path_1?: string | null;
+          image_path_2?: string | null;
+        };
+        Update: {
+          id?: number;
+          statement_text?: string;
+          image_path_1?: string | null;
+          image_path_2?: string | null;
+        };
+        Relationships: [];
+      };
+      bio: {
+        Row: {
+          id: number;
+          bio_text: string;
+        };
+        Insert: {
+          id?: number;
+          bio_text?: string;
+        };
+        Update: {
+          id?: number;
+          bio_text?: string;
+        };
+        Relationships: [];
+      };
+      series: {
+        Row: {
+          id: number;
+          title: string;
+          slug: string;
+          essay_text: string | null;
+          display_order: number;
+          is_active: boolean;
+          created_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          title: string;
+          slug: string;
+          essay_text?: string | null;
+          display_order?: number;
+          is_active?: boolean;
+          created_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          title?: string;
+          slug?: string;
+          essay_text?: string | null;
+          display_order?: number;
+          is_active?: boolean;
+          created_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
+      artworks: {
+        Row: {
+          id: number;
+          series_id: number;
+          title: string;
+          year: string | null;
+          technique: string;
+          height_cm: number | null;
+          width_cm: number | null;
+          availability: Database['public']['Enums']['availability'];
+          image_path: string | null;
+          microstory: string | null;
+          display_order: number;
+          created_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          series_id: number;
+          title?: string;
+          year?: string | null;
+          technique: string;
+          height_cm?: number | null;
+          width_cm?: number | null;
+          availability?: Database['public']['Enums']['availability'];
+          image_path?: string | null;
+          microstory?: string | null;
+          display_order?: number;
+          created_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          series_id?: number;
+          title?: string;
+          year?: string | null;
+          technique?: string;
+          height_cm?: number | null;
+          width_cm?: number | null;
+          availability?: Database['public']['Enums']['availability'];
+          image_path?: string | null;
+          microstory?: string | null;
+          display_order?: number;
+          created_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
+      settings: {
+        Row: {
+          key: string;
+          value: string;
+        };
+        Insert: {
+          key: string;
+          value: string;
+        };
+        Update: {
+          key?: string;
+          value?: string;
+        };
+        Relationships: [];
+      };
+      contact_requests: {
+        Row: {
+          id: number;
+          name: string;
+          email: string;
+          request_type: string;
+          details: string;
+          is_read: boolean;
+          created_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          email: string;
+          request_type: string;
+          details: string;
+          is_read?: boolean;
+          created_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+          email?: string;
+          request_type?: string;
+          details?: string;
+          is_read?: boolean;
+          created_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
+      admin_users: {
+        Row: { user_id: string; created_at: string };
+        Insert: { user_id: string; created_at?: string };
+        Update: { user_id?: string; created_at?: string };
+        Relationships: [];
+      };
+      rate_limit_buckets: {
+        Row: {
+          scope: string;
+          subject_hash: string;
+          window_started_at: string;
+          request_count: number;
+        };
+        Insert: {
+          scope: string;
+          subject_hash: string;
+          window_started_at?: string;
+          request_count?: number;
+        };
+        Update: {
+          scope?: string;
+          subject_hash?: string;
+          window_started_at?: string;
+          request_count?: number;
+        };
+        Relationships: [];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: {
+      consume_rate_limit: {
+        Args: {
+          p_scope: string;
+          p_subject_hash: string;
+          p_window_seconds: number;
+          p_max_requests: number;
+        };
+        Returns: boolean;
+      };
+      reset_rate_limit: {
+        Args: {
+          p_scope: string;
+          p_subject_hash: string;
+        };
+        Returns: undefined;
+      };
+    };
+    Enums: {
+      availability: 'disponible' | 'coleccion_privada' | 'no_disponible';
+    };
+    CompositeTypes: Record<string, never>;
+  };
+};

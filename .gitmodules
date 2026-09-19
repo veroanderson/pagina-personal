@@ -1,0 +1,6 @@
+[submodule ".skills/arquitectura-monolitica"]
+	path = .skills/arquitectura-monolitica
+	url = https://github.com/alvmivan/arquitectura-monolitica.git
+[submodule ".skills/trq-design-skill"]
+	path = .skills/trq-design-skill
+	url = https://github.com/alvmivan/trq-design-skill.git
