@@ -133,6 +133,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <Link href="/admin" className="hover:text-ink transition opacity-40 hover:opacity-100">
               [Admin]
             </Link>
+          </div>
+          <div className="pt-2">
             <ThemeSelector />
           </div>
         </div>
