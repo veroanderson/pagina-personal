@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { SESSION_COOKIE_NAME } from './lib/session-cookie';
+import { SESSION_COOKIE_NAME } from '@/features/admin-auth/edge';
 
 // ATENCIÓN — este middleware NO es el control de acceso del panel admin.
 //
 // Es una capa de UX (redirigir a /admin/login antes de renderizar) más un
 // backstop que rechaza lo obviamente anónimo. La autorización real —verificar
 // la firma HMAC y la expiración del token— vive en `requireSession()`
-// (`src/lib/auth-guard.ts`), llamada dentro de cada route handler de
+// (`src/features/admin-auth/infra/server/auth-guard.ts`), llamada dentro de cada route handler de
 // /api/admin/* y en el layout del panel. Ver `04-SECURITY-PATTERNS.md` § 2.
 //
 // Dos razones por las que la verificación no puede vivir acá:

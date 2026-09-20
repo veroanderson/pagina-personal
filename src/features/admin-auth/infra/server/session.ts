@@ -8,7 +8,7 @@ import crypto from 'crypto';
 // el middleware de Next 14 corre siempre en Edge Runtime, donde `node:crypto`
 // no existe. Ver `04-SECURITY-PATTERNS.md` § 1 y § 2.
 
-export { SESSION_COOKIE_NAME } from './session-cookie';
+export { SESSION_COOKIE_NAME } from '../session-cookie';
 
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 días, en segundos
 

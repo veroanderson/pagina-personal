@@ -1,5 +1,1 @@
-import { redirect } from 'next/navigation';
-
-export default function AdminIndexPage() {
-  redirect('/admin/manifiesto');
-}
+export { AdminRootRedirect as default } from '@/features/admin-shell';

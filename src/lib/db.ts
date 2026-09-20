@@ -2,7 +2,6 @@ import { getSupabaseAdmin } from './supabase-server';
 import { publicImageUrl, removeStorageObject } from './storage';
 import type { Database } from './database.types';
 
-type ManifestoRow = Database['public']['Tables']['manifesto']['Row'];
 type BioRow = Database['public']['Tables']['bio']['Row'];
 type SeriesRow = Database['public']['Tables']['series']['Row'];
 type ArtworkRow = Database['public']['Tables']['artworks']['Row'];
@@ -11,11 +10,25 @@ type ContactRequestRow = Database['public']['Tables']['contact_requests']['Row']
 export interface Manifesto {
   id: number;
   statementText: string;
+  eyebrow?: string;
+  title?: string;
+  imageSrc?: string | null;
+  imageAlt?: string;
   imagePath1?: string | null;
   imagePath2?: string | null;
   imageUrl1?: string | null;
   imageUrl2?: string | null;
 }
+
+type ManifestoSetting = {
+  eyebrow?: string;
+  title?: string;
+  imageSrc?: string | null;
+  imageAlt?: string;
+  statement_text?: string;
+  image_path_1?: string | null;
+  image_path_2?: string | null;
+};
 
 export interface Series {
   id: number;
@@ -65,14 +78,22 @@ function throwIfError(error: { message: string } | null): void {
   if (error) throw new Error(error.message);
 }
 
-function mapManifesto(row: ManifestoRow): Manifesto {
+function mapManifesto(value: ManifestoSetting): Manifesto {
+  const title = value.title ?? value.statement_text ?? '';
+  const imageValue = value.imageSrc ?? value.image_path_1 ?? null;
+  const imagePath1 = value.image_path_1 ?? (imageValue && !imageValue.startsWith('/') ? imageValue : null);
+  const imageUrl1 = imageValue?.startsWith('/') ? imageValue : publicImageUrl(imageValue);
   return {
-    id: row.id,
-    statementText: row.statement_text,
-    imagePath1: row.image_path_1,
-    imagePath2: row.image_path_2,
-    imageUrl1: publicImageUrl(row.image_path_1),
-    imageUrl2: publicImageUrl(row.image_path_2),
+    id: 1,
+    statementText: title,
+    eyebrow: value.eyebrow,
+    title,
+    imageSrc: imageUrl1,
+    imageAlt: value.imageAlt,
+    imagePath1,
+    imagePath2: value.image_path_2,
+    imageUrl1,
+    imageUrl2: publicImageUrl(value.image_path_2),
   };
 }
 
@@ -129,38 +150,56 @@ function mapContactRequest(row: ContactRequestRow): ContactRequest {
 
 export async function getManifesto(): Promise<Manifesto> {
   const { data, error } = await getSupabaseAdmin()
-    .from('manifesto')
-    .select('id, statement_text, image_path_1, image_path_2')
-    .eq('id', 1)
+    .from('settings')
+    .select('value')
+    .eq('key', 'home_manifesto')
     .maybeSingle();
 
   throwIfError(error);
-  return data ? mapManifesto(data) : { id: 1, statementText: '', imageUrl1: null, imageUrl2: null };
+  const value = data?.value;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return { id: 1, statementText: '', imageUrl1: null, imageUrl2: null };
+  }
+
+  const manifesto = value as Partial<ManifestoSetting>;
+  return mapManifesto({
+    eyebrow: typeof manifesto.eyebrow === 'string' ? manifesto.eyebrow : undefined,
+    title: typeof manifesto.title === 'string' ? manifesto.title : undefined,
+    imageSrc: typeof manifesto.imageSrc === 'string' ? manifesto.imageSrc : null,
+    imageAlt: typeof manifesto.imageAlt === 'string' ? manifesto.imageAlt : undefined,
+    statement_text: typeof manifesto.statement_text === 'string' ? manifesto.statement_text : undefined,
+    image_path_1: typeof manifesto.image_path_1 === 'string' ? manifesto.image_path_1 : null,
+    image_path_2: typeof manifesto.image_path_2 === 'string' ? manifesto.image_path_2 : null,
+  });
 }
 
 export async function updateManifesto(
-  statementText: string,
-  imagePath1?: string | null,
-  imagePath2?: string | null,
+  input: {
+    eyebrow: string;
+    title: string;
+    imageSrc: string | null;
+    imageAlt: string;
+  },
 ): Promise<void> {
   const current = await getManifesto();
-  const nextImagePath1 = imagePath1 === undefined ? current.imagePath1 ?? null : imagePath1;
-  const nextImagePath2 = imagePath2 === undefined ? current.imagePath2 ?? null : imagePath2;
-  const { error } = await getSupabaseAdmin().from('manifesto').upsert(
+  const nextImagePath = input.imageSrc && !input.imageSrc.startsWith('/') ? input.imageSrc : null;
+  const { error } = await getSupabaseAdmin().from('settings').upsert(
     {
-      id: 1,
-      statement_text: statementText,
-      image_path_1: nextImagePath1,
-      image_path_2: nextImagePath2,
+      key: 'home_manifesto',
+      value: {
+        eyebrow: input.eyebrow,
+        title: input.title,
+        imageSrc: input.imageSrc,
+        imageAlt: input.imageAlt,
+      },
     },
-    { onConflict: 'id' },
+    { onConflict: 'key' },
   );
 
   throwIfError(error);
 
   for (const [oldPath, newPath] of [
-    [current.imagePath1, nextImagePath1],
-    [current.imagePath2, nextImagePath2],
+    [current.imagePath1, nextImagePath],
   ] as Array<[string | null | undefined, string | null]>) {
     if (oldPath && oldPath !== newPath) {
       try {
@@ -476,7 +515,7 @@ export async function getSetting(key: string, defaultValue: string): Promise<str
     .maybeSingle();
 
   throwIfError(error);
-  return data?.value ?? defaultValue;
+  return typeof data?.value === 'string' ? data.value : defaultValue;
 }
 
 export async function setSetting(key: string, value: string): Promise<void> {

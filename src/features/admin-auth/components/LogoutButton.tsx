@@ -2,14 +2,16 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useAdminAuth } from '../hooks/useAdminAuth';
 
 export default function LogoutButton() {
   const router = useRouter();
+  const { logout: logoutRequest } = useAdminAuth();
   const [pending, setPending] = useState(false);
 
   async function logout() {
     setPending(true);
-    await fetch('/api/auth/logout', { method: 'POST' });
+    await logoutRequest();
     router.replace('/admin/login');
     router.refresh();
   }

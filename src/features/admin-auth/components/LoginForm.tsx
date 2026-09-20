@@ -3,9 +3,11 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Alert, Button, Input } from '@/shared/ui';
+import { useAdminAuth } from '../hooks/useAdminAuth';
 
 export default function LoginForm() {
   const router = useRouter();
+  const { login } = useAdminAuth();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -17,11 +19,7 @@ export default function LoginForm() {
     setError('');
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: password.trim() }),
-      });
+      const res = await login(password);
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {

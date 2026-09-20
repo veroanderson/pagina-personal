@@ -1,27 +1,8 @@
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
 export type Database = {
   public: {
     Tables: {
-      manifesto: {
-        Row: {
-          id: number;
-          statement_text: string;
-          image_path_1: string | null;
-          image_path_2: string | null;
-        };
-        Insert: {
-          id?: number;
-          statement_text?: string;
-          image_path_1?: string | null;
-          image_path_2?: string | null;
-        };
-        Update: {
-          id?: number;
-          statement_text?: string;
-          image_path_1?: string | null;
-          image_path_2?: string | null;
-        };
-        Relationships: [];
-      };
       bio: {
         Row: {
           id: number;
@@ -121,15 +102,15 @@ export type Database = {
       settings: {
         Row: {
           key: string;
-          value: string;
+          value: Json;
         };
         Insert: {
           key: string;
-          value: string;
+          value: Json;
         };
         Update: {
           key?: string;
-          value?: string;
+          value?: Json;
         };
         Relationships: [];
       };

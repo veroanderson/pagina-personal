@@ -17,6 +17,9 @@
 const SUPABASE_ORIGIN = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
   : null;
+const SUPABASE_HOSTNAME = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
+  : null;
 
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
@@ -32,6 +35,11 @@ const CONTENT_SECURITY_POLICY = [
 ].join('; ');
 
 const nextConfig = {
+  images: {
+    remotePatterns: SUPABASE_HOSTNAME
+      ? [{ protocol: 'https', hostname: SUPABASE_HOSTNAME }]
+      : [],
+  },
   // No exponer la versión de Next.js en las respuestas: es información gratis
   // para quien busca instalaciones con una CVE conocida sin parchear.
   poweredByHeader: false,
