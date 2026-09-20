@@ -3,18 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  isNavigationLinkActive,
+  MobileNavigationMenu,
+  PUBLIC_NAVIGATION_LINKS,
+} from '@/features/navigation';
 import { ThemeSelector } from '@/features/theme';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const navLinks = [
-    { href: '/', label: 'Manifiesto' },
-    { href: '/series', label: 'Series' },
-    { href: '/biografia', label: 'Biografía' },
-    { href: '/contacto', label: 'Contacto' },
-  ];
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col lg:flex-row">
@@ -35,48 +33,21 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <div className="flex items-center gap-2">
           <ThemeSelector variant="compact" />
           <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 text-ink-muted hover:text-ink focus:outline-none"
-          aria-label="Abrir menú"
-        >
-          {mobileMenuOpen ? (
-            <span className="text-xl">✕</span>
-          ) : (
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 text-ink-muted hover:text-ink focus:outline-none"
+            aria-label="Abrir menú"
+            aria-expanded={mobileMenuOpen}
+          >
             <div className="space-y-1.5 w-6">
               <span className="block h-0.5 bg-ink"></span>
               <span className="block h-0.5 bg-ink-muted"></span>
               <span className="block h-0.5 bg-accent"></span>
             </div>
-          )}
           </button>
         </div>
       </header>
 
-      {/* MOBILE DROPDOWN NAV MENU */}
-      {mobileMenuOpen && (
-        <nav className="lg:hidden sticky top-16 z-30 bg-surface border-b border-line px-6 py-6 space-y-4">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block font-serif-editorial text-2xl tracking-editorial transition ${
-                  isActive ? 'text-accent font-medium' : 'text-ink-muted hover:text-ink'
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-          <div className="pt-4 border-t border-line/40 text-xs font-mono text-ink-muted">
-            <Link href="/admin" className="hover:text-ink">
-              Acceso Admin 🔒
-            </Link>
-          </div>
-        </nav>
-      )}
+      <MobileNavigationMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
 
       {/* DESKTOP BIFURCATED SIDEBAR (≥ lg) */}
       <aside className="hidden lg:flex w-80 flex-col justify-between border-r border-line p-10 h-screen sticky top-0 bg-canvas flex-shrink-0">
@@ -105,8 +76,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
           {/* Navigation Links */}
           <nav className="space-y-4">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+            {PUBLIC_NAVIGATION_LINKS.map((link) => {
+              const isActive = isNavigationLinkActive(pathname, link);
               return (
                 <Link
                   key={link.href}
