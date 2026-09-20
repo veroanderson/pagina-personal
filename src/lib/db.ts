@@ -1,6 +1,7 @@
 import { getSupabaseAdmin } from './supabase-server';
 import { publicImageUrl, removeStorageObject } from './storage';
 import type { Database } from './database.types';
+import type { HomeTitlePosition } from '@/features/home/types/home';
 
 type BioRow = Database['public']['Tables']['bio']['Row'];
 type SeriesRow = Database['public']['Tables']['series']['Row'];
@@ -14,6 +15,7 @@ export interface Manifesto {
   title?: string;
   imageSrc?: string | null;
   imageAlt?: string;
+  titlePosition?: HomeTitlePosition;
   imagePath1?: string | null;
   imagePath2?: string | null;
   imageUrl1?: string | null;
@@ -25,6 +27,7 @@ type ManifestoSetting = {
   title?: string;
   imageSrc?: string | null;
   imageAlt?: string;
+  titlePosition?: HomeTitlePosition;
   statement_text?: string;
   image_path_1?: string | null;
   image_path_2?: string | null;
@@ -78,6 +81,10 @@ function throwIfError(error: { message: string } | null): void {
   if (error) throw new Error(error.message);
 }
 
+function isHomeTitlePosition(value: unknown): value is HomeTitlePosition {
+  return value === 'top-left' || value === 'top-right' || value === 'bottom-left' || value === 'bottom-right';
+}
+
 function mapManifesto(value: ManifestoSetting): Manifesto {
   const title = value.title ?? value.statement_text ?? '';
   const imageValue = value.imageSrc ?? value.image_path_1 ?? null;
@@ -90,6 +97,7 @@ function mapManifesto(value: ManifestoSetting): Manifesto {
     title,
     imageSrc: imageUrl1,
     imageAlt: value.imageAlt,
+    titlePosition: value.titlePosition ?? 'top-left',
     imagePath1,
     imagePath2: value.image_path_2,
     imageUrl1,
@@ -158,7 +166,7 @@ export async function getManifesto(): Promise<Manifesto> {
   throwIfError(error);
   const value = data?.value;
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return { id: 1, statementText: '', imageUrl1: null, imageUrl2: null };
+    return { id: 1, statementText: '', titlePosition: 'top-left', imageUrl1: null, imageUrl2: null };
   }
 
   const manifesto = value as Partial<ManifestoSetting>;
@@ -167,6 +175,7 @@ export async function getManifesto(): Promise<Manifesto> {
     title: typeof manifesto.title === 'string' ? manifesto.title : undefined,
     imageSrc: typeof manifesto.imageSrc === 'string' ? manifesto.imageSrc : null,
     imageAlt: typeof manifesto.imageAlt === 'string' ? manifesto.imageAlt : undefined,
+    titlePosition: isHomeTitlePosition(manifesto.titlePosition) ? manifesto.titlePosition : undefined,
     statement_text: typeof manifesto.statement_text === 'string' ? manifesto.statement_text : undefined,
     image_path_1: typeof manifesto.image_path_1 === 'string' ? manifesto.image_path_1 : null,
     image_path_2: typeof manifesto.image_path_2 === 'string' ? manifesto.image_path_2 : null,
@@ -179,6 +188,7 @@ export async function updateManifesto(
     title: string;
     imageSrc: string | null;
     imageAlt: string;
+    titlePosition: HomeTitlePosition;
   },
 ): Promise<void> {
   const current = await getManifesto();
@@ -191,6 +201,7 @@ export async function updateManifesto(
         title: input.title,
         imageSrc: input.imageSrc,
         imageAlt: input.imageAlt,
+        titlePosition: input.titlePosition,
       },
     },
     { onConflict: 'key' },

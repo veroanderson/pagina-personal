@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAdminMedia } from '@/features/admin-media';
 import { useAdminHome } from '../hooks/useAdminHome';
+import type { HomeTitlePosition } from '@/features/home/types/home';
 
 export default function AdminHomePage() {
   const { getHomeSettings, updateHomeSettings } = useAdminHome();
@@ -11,6 +12,7 @@ export default function AdminHomePage() {
   const [title, setTitle] = useState('');
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [imageAlt, setImageAlt] = useState('');
+  const [titlePosition, setTitlePosition] = useState<HomeTitlePosition>('top-left');
   const [imagePath, setImagePath] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -26,6 +28,7 @@ export default function AdminHomePage() {
         setTitle(data?.title || data?.statementText || '');
         setImageSrc(data?.imageSrc || data?.imageUrl1 || null);
         setImageAlt(data?.imageAlt || '');
+        setTitlePosition(data?.titlePosition || 'top-left');
         setImagePath(data?.imagePath1 || null);
         setImageUrl(data?.imageUrl1 || null);
       })
@@ -38,7 +41,7 @@ export default function AdminHomePage() {
     setSaving(true);
     setMessage(null);
     try {
-      const response = await updateHomeSettings({ eyebrow, title, imageSrc: imagePath || imageSrc, imageAlt });
+      const response = await updateHomeSettings({ eyebrow, title, imageSrc: imagePath || imageSrc, imageAlt, titlePosition });
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'No se pudo guardar la configuración de inicio.');
@@ -75,7 +78,6 @@ export default function AdminHomePage() {
     <div className="max-w-4xl space-y-8">
       <div>
         <h1 className="font-serif-editorial text-3xl font-normal text-ink">Configuración de Inicio</h1>
-        <p className="mt-1 text-sm text-ink-muted">Definí el texto y la imagen hero que se muestran en la página principal.</p>
       </div>
 
       {message && (
@@ -99,21 +101,29 @@ export default function AdminHomePage() {
 
         <div className="space-y-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink">Eyebrow</label>
+            <label className="mb-2 block text-sm font-medium text-ink">Antetítulo</label>
             <input value={eyebrow} onChange={(event) => setEyebrow(event.target.value)} className="w-full rounded border border-line bg-surface p-3 text-base text-ink focus:border-accent focus:outline-none" required />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink">Texto alternativo de la imagen</label>
+            <label className="mb-2 block text-sm font-medium text-ink">Texto alternativo de la imagen (Accesibilidad)</label>
             <input value={imageAlt} onChange={(event) => setImageAlt(event.target.value)} className="w-full rounded border border-line bg-surface p-3 text-base text-ink focus:border-accent focus:outline-none" required />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-ink">Posición del título</label>
+            <select value={titlePosition} onChange={(event) => setTitlePosition(event.target.value as HomeTitlePosition)} className="w-full rounded border border-line bg-surface p-3 text-base text-ink focus:border-accent focus:outline-none">
+              <option value="top-left">Arriba a la izquierda</option>
+              <option value="top-right">Arriba a la derecha</option>
+              <option value="bottom-left">Abajo a la izquierda</option>
+              <option value="bottom-right">Abajo a la derecha</option>
+            </select>
           </div>
         </div>
 
         <div className="space-y-3 border-t border-line pt-6">
-          <label className="block text-sm font-medium text-ink">Imagen hero</label>
-          <p className="text-xs text-ink-muted">La imagen se procesa y guarda en el bucket de Supabase Storage.</p>
+          <label className="block text-sm font-medium text-ink">Imagen de inicio</label>
           {imageUrl ? (
             <div className="space-y-2">
-              <img src={imageUrl} alt="Vista previa de la imagen hero" className="h-72 w-full rounded border border-line object-cover" />
+              <img src={imageUrl} alt={imageAlt} className="h-72 w-full rounded border border-line object-cover" />
               <button type="button" onClick={() => { setImageUrl(null); setImagePath(null); setImageSrc(null); }} className="text-xs text-danger hover:underline">
                 Quitar imagen
               </button>
