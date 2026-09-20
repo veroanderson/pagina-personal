@@ -10,12 +10,17 @@ import {
 } from '@/features/navigation';
 import { ThemeSelector } from '@/features/theme';
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+type PublicLayoutProps = {
+  children: React.ReactNode;
+  fullBleed?: boolean;
+};
+
+export default function PublicLayout({ children, fullBleed = false }: PublicLayoutProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-canvas text-ink flex flex-col lg:flex-row">
+    <div className={`${fullBleed ? 'h-[100dvh] overflow-hidden' : 'min-h-screen'} bg-canvas text-ink flex flex-col lg:flex-row`}>
       {/* MOBILE TOP HEADER (< lg) */}
       <header className="lg:hidden sticky top-0 z-40 bg-canvas/95 backdrop-blur-md border-b border-line px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
@@ -112,7 +117,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 min-w-0 px-4 py-8 lg:px-16 lg:py-16">
+      <main className={`flex-1 min-w-0 ${fullBleed ? 'min-h-0' : 'px-4 py-8 lg:px-16 lg:py-16'}`}>
         {children}
       </main>
     </div>
