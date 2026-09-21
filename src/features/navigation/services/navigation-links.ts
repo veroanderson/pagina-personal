@@ -1,7 +1,7 @@
 import type { NavigationLink } from '../types/navigation';
 
 export const PUBLIC_NAVIGATION_LINKS: NavigationLink[] = [
-  { href: '/', label: 'Manifiesto' },
+  { href: '/', label: 'Inicio' },
   { href: '/series', label: 'Series' },
   { href: '/biografia', label: 'Biografía' },
   { href: '/contacto', label: 'Contacto' },
