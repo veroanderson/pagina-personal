@@ -9,10 +9,13 @@ values (
 )
 on conflict (id) do nothing;
 
-insert into public.bio (id, bio_text)
+insert into public.biography_sections (id, body_text, heading_level, display_order, is_active)
 values (
   1,
-  E'Biografía de prueba para validar la página pública y el panel de administración.\n\nEste texto es ficticio y debe reemplazarse por el contenido real de la artista.'
+  E'Biografía de prueba para validar la página pública y el panel de administración.\n\nEste texto es ficticio y debe reemplazarse por el contenido real de la artista.',
+  'large',
+  0,
+  true
 )
 on conflict (id) do nothing;
 

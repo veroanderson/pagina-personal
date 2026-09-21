@@ -1,1 +1,1 @@
-export { GET as getAdminBiography, POST as updateAdminBiography } from './infra/server/biography-route';
+export { GET, POST, PUT, PATCH, DELETE } from './infra/server/biography-route';

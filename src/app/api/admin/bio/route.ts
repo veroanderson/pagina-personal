@@ -1,1 +1,1 @@
-export { getAdminBiography as GET, updateAdminBiography as POST } from '@/features/admin-biography/server';
+export { GET, POST, PUT, PATCH, DELETE } from '@/features/admin-biography/server';

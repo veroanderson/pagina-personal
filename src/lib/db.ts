@@ -3,7 +3,6 @@ import { publicImageUrl, removeStorageObject } from './storage';
 import type { Database } from './database.types';
 import type { HomeTitlePosition } from '@/features/home/types/home';
 
-type BioRow = Database['public']['Tables']['bio']['Row'];
 type SeriesRow = Database['public']['Tables']['series']['Row'];
 type ArtworkRow = Database['public']['Tables']['artworks']['Row'];
 type ContactRequestRow = Database['public']['Tables']['contact_requests']['Row'];
@@ -61,11 +60,6 @@ export interface Artwork {
   imagePath?: string | null;
 }
 
-export interface Bio {
-  id: number;
-  bioText: string;
-}
-
 export interface ContactRequest {
   id: number;
   name: string;
@@ -103,10 +97,6 @@ function mapManifesto(value: ManifestoSetting): Manifesto {
     imageUrl1,
     imageUrl2: publicImageUrl(value.image_path_2),
   };
-}
-
-function mapBio(row: BioRow): Bio {
-  return { id: row.id, bioText: row.bio_text };
 }
 
 function mapSeries(row: SeriesRow): Series {
@@ -429,27 +419,6 @@ export async function deleteArtwork(id: number): Promise<void> {
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', id)
     .is('deleted_at', null);
-
-  throwIfError(error);
-}
-
-// --- BIO ---
-
-export async function getBio(): Promise<Bio> {
-  const { data, error } = await getSupabaseAdmin()
-    .from('bio')
-    .select('id, bio_text')
-    .eq('id', 1)
-    .maybeSingle();
-
-  throwIfError(error);
-  return data ? mapBio(data) : { id: 1, bioText: '' };
-}
-
-export async function updateBio(bioText: string): Promise<void> {
-  const { error } = await getSupabaseAdmin()
-    .from('bio')
-    .upsert({ id: 1, bio_text: bioText }, { onConflict: 'id' });
 
   throwIfError(error);
 }

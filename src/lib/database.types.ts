@@ -3,18 +3,39 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
-      bio: {
+      biography_sections: {
         Row: {
           id: number;
-          bio_text: string;
+          subtitle: string | null;
+          body_text: string;
+          heading_level: 'large' | 'medium' | 'small';
+          display_order: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
         };
         Insert: {
           id?: number;
-          bio_text?: string;
+          subtitle?: string | null;
+          body_text: string;
+          heading_level?: 'large' | 'medium' | 'small';
+          display_order?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
         };
         Update: {
           id?: number;
-          bio_text?: string;
+          subtitle?: string | null;
+          body_text?: string;
+          heading_level?: 'large' | 'medium' | 'small';
+          display_order?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
         };
         Relationships: [];
       };
@@ -190,6 +211,12 @@ export type Database = {
         Args: {
           p_scope: string;
           p_subject_hash: string;
+        };
+        Returns: undefined;
+      };
+      reorder_biography_sections: {
+        Args: {
+          p_ordered_ids: number[];
         };
         Returns: undefined;
       };
