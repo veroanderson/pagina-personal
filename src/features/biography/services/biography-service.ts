@@ -90,14 +90,14 @@ export const biographyService = {
       throw new BiographyValidationError('La lista de orden debe incluir todas las secciones una sola vez');
     }
 
+    // Reordering is intentionally independent from heading hierarchy.
     const byId = new Map(sections.map((section) => [section.id, section]));
-    const orderedSections = orderedIds.map((id) => {
+    orderedIds.forEach((id) => {
       const section = byId.get(id);
       if (!section) throw new BiographyValidationError('La lista de orden contiene una sección inválida');
-      return section;
+      return;
     });
 
-    validateBiographyHierarchy(orderedSections);
     return reorderBiographySections(orderedIds);
   },
 };

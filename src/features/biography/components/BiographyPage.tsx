@@ -8,7 +8,7 @@ function BiographyHeading({ section }: { section: BiographySection }) {
   const classNameByLevel = {
     large: 'font-serif-editorial text-3xl lg:text-4xl text-ink font-normal pt-2',
     medium: 'font-serif-editorial text-2xl lg:text-3xl text-accent font-normal pt-2',
-    small: 'font-serif-editorial text-xl lg:text-2xl text-accent/90 font-normal pt-2',
+    small: 'font-serif-editorial text-lg lg:text-xl text-accent/75 font-normal pt-1',
   } as const;
 
   const className = classNameByLevel[section.headingLevel];
