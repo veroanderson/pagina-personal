@@ -30,18 +30,13 @@ values (
 on conflict (slug) do nothing;
 
 insert into public.artworks (
-  series_id, title, year, technique, height_cm, width_cm,
-  availability, microstory, display_order
+  series_id, title, year,
+  display_order
 )
 select
   s.id,
   'La barra de hierro (Tragedia en la familia)',
   '2023',
-  'Óleo y óxido sobre lienzo',
-  120,
-  90,
-  'disponible',
-  'Una superficie herida sostiene el silencio después del golpe. El color no ilustra la tragedia: la deja respirar.',
   1
 from public.series s
 where s.slug = 'la-sombra-y-la-capa'
@@ -52,18 +47,13 @@ where s.slug = 'la-sombra-y-la-capa'
   );
 
 insert into public.artworks (
-  series_id, title, year, technique, height_cm, width_cm,
-  availability, microstory, display_order
+  series_id, title, year,
+  display_order
 )
 select
   s.id,
   'Dicotomía en óleo (Harvey Dent)',
   '2022',
-  'Técnica mixta sobre tabla de pino',
-  100,
-  70,
-  'coleccion_privada',
-  'Dos mitades de una misma decisión se miran sin encontrar una moneda que las reconcilie.',
   2
 from public.series s
 where s.slug = 'la-sombra-y-la-capa'
@@ -74,18 +64,13 @@ where s.slug = 'la-sombra-y-la-capa'
   );
 
 insert into public.artworks (
-  series_id, title, year, technique, height_cm, width_cm,
-  availability, microstory, display_order
+  series_id, title, year,
+  display_order
 )
 select
   s.id,
   'El Batimóvil en la noche',
   '2024',
-  'Acuarela y tinta sobre papel de algodón 300g',
-  50,
-  70,
-  'no_disponible',
-  'La máquina cruza el horizonte como una extensión del vacío urbano: velocidad sin promesa de llegada.',
   3
 from public.series s
 where s.slug = 'la-sombra-y-la-capa'

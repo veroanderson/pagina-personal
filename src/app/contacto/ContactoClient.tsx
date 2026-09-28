@@ -7,7 +7,6 @@ import { Alert, Button, Input, Select, Textarea } from '@/shared/ui';
 export default function ContactoClient() {
   const searchParams = useSearchParams();
   const artworkTitle = searchParams.get('title');
-  const artworkTech = searchParams.get('tech');
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -19,15 +18,12 @@ export default function ContactoClient() {
   useEffect(() => {
     if (artworkTitle) {
       setRequestType('Consulta sobre obra');
-      const techDecoded = artworkTech ? decodeURIComponent(artworkTech) : '';
       const titleDecoded = decodeURIComponent(artworkTitle);
       setDetails(
-        `Hola Vero,\n\nQuisiera consultar sobre la disponibilidad / adquisición de la obra "${titleDecoded}"${
-          techDecoded ? ` (${techDecoded})` : ''
-        }.\n\nAgradezco tu atención.`
+        `Hola Vero,\n\nQuisiera consultar sobre la disponibilidad / adquisición de la obra "${titleDecoded}".\n\nAgradezco tu atención.`
       );
     }
-  }, [artworkTitle, artworkTech]);
+  }, [artworkTitle]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

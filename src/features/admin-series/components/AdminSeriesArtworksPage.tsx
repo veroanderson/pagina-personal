@@ -3,18 +3,98 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { DragDropProvider } from '@dnd-kit/react';
+import { isSortable, useSortable } from '@dnd-kit/react/sortable';
 import { useAdminMedia } from '@/features/admin-media';
 import { useAdminArtworks } from '../hooks/useAdminArtworks';
 import { useAdminSeries } from '../hooks/useAdminSeries';
-import type { Artwork, ArtworkAvailability } from '../types/artwork';
+import type { Artwork } from '../types/artwork';
 import type { SeriesItem } from '../types/series';
+
+function moveArtwork<T>(items: T[], from: number, to: number): T[] {
+  const next = [...items];
+  const [moved] = next.splice(from, 1);
+  next.splice(to, 0, moved);
+  return next;
+}
+
+function SortableArtworkCard({
+  item,
+  index,
+  onEdit,
+  onDelete,
+}: {
+  item: Artwork;
+  index: number;
+  onEdit: (item: Artwork) => void;
+  onDelete: (id: number, title: string) => void;
+}) {
+  const { ref, handleRef, isDragging } = useSortable({ id: item.id, index });
+
+  return (
+    <div
+      ref={ref}
+      className={`p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-surface-hover/50 transition ${isDragging ? 'opacity-60 shadow-lg' : ''}`}
+    >
+      <div className="flex items-start gap-4">
+        <button
+          ref={handleRef}
+          type="button"
+          aria-label={`Reordenar obra ${index + 1}`}
+          className="cursor-grab rounded border border-line px-2 py-1 text-lg text-ink-muted hover:text-ink active:cursor-grabbing"
+        >
+          ⋮⋮
+        </button>
+        {item.imageUrl ? (
+          <img
+            src={item.imageUrl}
+            alt={item.title}
+            className="h-24 w-24 object-cover rounded border border-line flex-shrink-0 bg-overlay/40"
+          />
+        ) : (
+          <div className="h-24 w-24 rounded border border-dashed border-line flex items-center justify-center text-xs text-ink-muted flex-shrink-0">
+            Sin foto
+          </div>
+        )}
+
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-serif-editorial text-xl text-ink font-medium">
+              {item.title}
+            </span>
+            {item.year && (
+              <span className="text-xs font-mono text-ink-muted tabular-nums">
+                ({item.year})
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-line/40 justify-end">
+        <button
+          onClick={() => onEdit(item)}
+          className="px-4 py-2 bg-line/40 hover:bg-line text-ink text-xs font-medium rounded transition"
+        >
+          Editar
+        </button>
+        <button
+          onClick={() => onDelete(item.id, item.title)}
+          className="px-4 py-2 bg-danger/20 hover:bg-danger/40 text-danger text-xs font-medium rounded transition"
+        >
+          Borrar
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminSeriesArtworksPage() {
   const params = useParams();
   const router = useRouter();
   const seriesId = params.id as string;
   const { listSeries } = useAdminSeries();
-  const { createArtwork, listArtworksBySeries, removeArtwork, updateArtwork } = useAdminArtworks();
+  const { createArtwork, listArtworksBySeries, removeArtwork, updateArtwork, reorderArtworks } = useAdminArtworks();
   const { uploadMedia } = useAdminMedia();
 
   const [series, setSeries] = useState<SeriesItem | null>(null);
@@ -26,15 +106,8 @@ export default function AdminSeriesArtworksPage() {
   // Form states
   const [title, setTitle] = useState('');
   const [year, setYear] = useState('');
-  const [technique, setTechnique] = useState('');
-  const [heightCm, setHeightCm] = useState('');
-  const [widthCm, setWidthCm] = useState('');
-  const [availability, setAvailability] = useState<ArtworkAvailability>('disponible');
   const [imageUrl, setImageUrl] = useState('');
   const [imagePath, setImagePath] = useState<string | null>(null);
-  const [microstory, setMicrostory] = useState('');
-  const [displayOrder, setDisplayOrder] = useState(0);
-
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -64,14 +137,8 @@ export default function AdminSeriesArtworksPage() {
     setEditingArtwork(null);
     setTitle('');
     setYear('');
-    setTechnique('Acuarela sobre papel de algodón 300g');
-    setHeightCm('');
-    setWidthCm('');
-    setAvailability('disponible');
     setImageUrl('');
     setImagePath(null);
-    setMicrostory('');
-    setDisplayOrder(artworks.length + 1);
     setMessage(null);
     setShowModal(true);
   };
@@ -80,14 +147,8 @@ export default function AdminSeriesArtworksPage() {
     setEditingArtwork(item);
     setTitle(item.title || '');
     setYear(item.year || '');
-    setTechnique(item.technique || '');
-    setHeightCm(item.heightCm ? String(item.heightCm) : '');
-    setWidthCm(item.widthCm ? String(item.widthCm) : '');
-    setAvailability(item.availability);
     setImageUrl(item.imageUrl || '');
     setImagePath(item.imagePath || null);
-    setMicrostory(item.microstory || '');
-    setDisplayOrder(item.displayOrder);
     setMessage(null);
     setShowModal(true);
   };
@@ -128,13 +189,7 @@ export default function AdminSeriesArtworksPage() {
       seriesId: Number(seriesId),
       title: title || 'Sin título',
       year: year || undefined,
-      technique,
-      heightCm: heightCm ? Number(heightCm) : undefined,
-      widthCm: widthCm ? Number(widthCm) : undefined,
-      availability,
       imagePath: imagePath || null,
-      microstory: microstory || undefined,
-      displayOrder: Number(displayOrder) || 0,
     };
 
     try {
@@ -171,6 +226,27 @@ export default function AdminSeriesArtworksPage() {
     }
   };
 
+  const handleDragEnd = async (event: Parameters<NonNullable<React.ComponentProps<typeof DragDropProvider>['onDragEnd']>>[0]) => {
+    if (event.canceled || !isSortable(event.operation.source)) return;
+    const { initialIndex, index } = event.operation.source;
+    if (initialIndex === index) return;
+
+    const previous = artworks;
+    const next = moveArtwork(previous, initialIndex, index);
+    setArtworks(next);
+    setMessage(null);
+
+    try {
+      const response = await reorderArtworks(Number(seriesId), next.map((item) => item.id));
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo guardar el orden.');
+      setMessage('Orden actualizado correctamente.');
+    } catch (error) {
+      setArtworks(previous);
+      setMessage(error instanceof Error ? error.message : 'No se pudo guardar el orden.');
+    }
+  };
+
   if (loading) {
     return <div className="p-4 text-ink-muted">Cargando Obras...</div>;
   }
@@ -200,7 +276,8 @@ export default function AdminSeriesArtworksPage() {
       </div>
 
       {/* Artworks List */}
-      <div className="divide-y divide-line rounded border border-line bg-surface overflow-hidden">
+      <DragDropProvider onDragEnd={handleDragEnd}>
+        <div className="divide-y divide-line rounded border border-line bg-surface overflow-hidden">
         {artworks.length === 0 ? (
           <div className="p-12 text-center text-ink-muted text-sm space-y-3">
             <p>No hay obras registradas en esta serie aún.</p>
@@ -212,82 +289,18 @@ export default function AdminSeriesArtworksPage() {
             </button>
           </div>
         ) : (
-          artworks.map((item) => (
-            <div
+          artworks.map((item, index) => (
+            <SortableArtworkCard
               key={item.id}
-              className="p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-surface-hover/50 transition"
-            >
-              <div className="flex items-start gap-4">
-                {item.imageUrl ? (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    className="h-24 w-24 object-cover rounded border border-line flex-shrink-0 bg-overlay/40"
-                  />
-                ) : (
-                  <div className="h-24 w-24 rounded border border-dashed border-line flex items-center justify-center text-xs text-ink-muted flex-shrink-0">
-                    Sin foto
-                  </div>
-                )}
-
-                <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-serif-editorial text-xl text-ink font-medium">
-                      {item.title}
-                    </span>
-                    {item.year && (
-                      <span className="text-xs font-mono text-ink-muted tabular-nums">
-                        ({item.year})
-                      </span>
-                    )}
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded font-mono uppercase border ${
-                        item.availability === 'disponible'
-                          ? 'bg-success/15 text-success border-success/40'
-                          : item.availability === 'coleccion_privada'
-                          ? 'bg-danger/20 text-danger border-danger/40'
-                          : 'bg-surface-hover text-ink-muted border-line'
-                      }`}
-                    >
-                      {item.availability.replace('_', ' ')}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-ink-muted">
-                    {item.technique}
-                    {(item.heightCm || item.widthCm) && (
-                      <span className="font-mono tabular-nums text-xs ml-2">
-                        • {item.heightCm || '?'} × {item.widthCm || '?'} cm
-                      </span>
-                    )}
-                  </p>
-
-                  {item.microstory && (
-                    <p className="text-xs italic text-ink-muted/80 line-clamp-2 mt-1">
-                      "{item.microstory}"
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-line/40 justify-end">
-                <button
-                  onClick={() => openEditModal(item)}
-                  className="px-4 py-2 bg-line/40 hover:bg-line text-ink text-xs font-medium rounded transition"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(item.id, item.title)}
-                  className="px-4 py-2 bg-danger/20 hover:bg-danger/40 text-danger text-xs font-medium rounded transition"
-                >
-                  Borrar
-                </button>
-              </div>
-            </div>
+              item={item}
+              index={index}
+              onEdit={openEditModal}
+              onDelete={handleDelete}
+            />
           ))
         )}
-      </div>
+        </div>
+      </DragDropProvider>
 
       {/* Touch-optimized Modal for mobile photo capture & creation */}
       {showModal && (
@@ -386,89 +399,7 @@ export default function AdminSeriesArtworksPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-ink mb-1">
-                  Técnica y Soporte *
-                </label>
-                <input
-                  type="text"
-                  value={technique}
-                  onChange={(e) => setTechnique(e.target.value)}
-                  className="w-full rounded border border-line bg-canvas p-3 text-base text-ink focus:border-accent focus:outline-none"
-                  placeholder="Ej: Acuarela sobre papel de algodón 300g"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-ink mb-1">
-                    Alto (cm)
-                  </label>
-                  <input
-                    type="number"
-                    value={heightCm}
-                    onChange={(e) => setHeightCm(e.target.value)}
-                    className="w-full rounded border border-line bg-canvas p-3 text-base text-ink font-mono tabular-nums focus:border-accent focus:outline-none"
-                    placeholder="30"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-ink mb-1">
-                    Ancho (cm)
-                  </label>
-                  <input
-                    type="number"
-                    value={widthCm}
-                    onChange={(e) => setWidthCm(e.target.value)}
-                    className="w-full rounded border border-line bg-canvas p-3 text-base text-ink font-mono tabular-nums focus:border-accent focus:outline-none"
-                    placeholder="40"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-ink mb-1">
-                    Disponibilidad
-                  </label>
-                  <select
-                    value={availability}
-                    onChange={(e) => setAvailability(e.target.value as any)}
-                    className="w-full rounded border border-line bg-canvas p-3 text-base text-ink focus:border-accent focus:outline-none"
-                  >
-                    <option value="disponible">Disponible</option>
-                    <option value="coleccion_privada">Colección Privada</option>
-                    <option value="no_disponible">No Disponible</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-ink mb-1">
-                  Microrrelato / Diario de Proceso (Opcional)
-                </label>
-                <textarea
-                  rows={4}
-                  value={microstory}
-                  onChange={(e) => setMicrostory(e.target.value)}
-                  className="w-full rounded border border-line bg-canvas p-3 text-base text-ink focus:border-accent focus:outline-none"
-                  placeholder="Pequeño poema o reflexión íntima sobre este cuadro..."
-                />
-              </div>
-
-              <div className="pt-4 flex items-center justify-between border-t border-line">
-                <div className="w-1/3">
-                  <label className="block text-xs font-medium text-ink mb-1">
-                    Orden
-                  </label>
-                  <input
-                    type="number"
-                    value={displayOrder}
-                    onChange={(e) => setDisplayOrder(Number(e.target.value))}
-                    className="w-full rounded border border-line bg-canvas p-2 text-sm text-ink font-mono tabular-nums"
-                  />
-                </div>
-
+              <div className="pt-4 flex items-center justify-end border-t border-line">
                 <div className="flex gap-3">
                   <button
                     type="button"

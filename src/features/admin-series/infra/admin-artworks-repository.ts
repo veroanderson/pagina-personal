@@ -21,6 +21,14 @@ export const adminArtworksRepository = {
     });
   },
 
+  reorder(seriesId: number, orderedIds: number[]) {
+    return fetch('/api/admin/artworks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ seriesId, orderedIds }),
+    });
+  },
+
   remove(id: number) {
     return fetch(`/api/admin/artworks?id=${id}`, { method: 'DELETE' });
   },

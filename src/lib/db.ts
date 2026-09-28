@@ -48,12 +48,7 @@ export interface Artwork {
   seriesId: number;
   title: string;
   year?: string | null;
-  technique: string;
-  heightCm?: number | null;
-  widthCm?: number | null;
-  availability: 'disponible' | 'coleccion_privada' | 'no_disponible';
   imageUrl?: string | null;
-  microstory?: string | null;
   displayOrder: number;
   createdAt: string;
   deletedAt?: string | null;
@@ -118,13 +113,8 @@ function mapArtwork(row: ArtworkRow): Artwork {
     seriesId: row.series_id,
     title: row.title,
     year: row.year,
-    technique: row.technique,
-    heightCm: row.height_cm === null ? null : Number(row.height_cm),
-    widthCm: row.width_cm === null ? null : Number(row.width_cm),
-    availability: row.availability,
     imageUrl: publicImageUrl(row.image_path),
     imagePath: row.image_path,
-    microstory: row.microstory,
     displayOrder: row.display_order,
     createdAt: row.created_at,
     deletedAt: row.deleted_at,
@@ -323,7 +313,9 @@ export async function getArtworksBySeries(seriesId: number): Promise<Artwork[]> 
     .order('id', { ascending: true });
 
   throwIfError(error);
-  return (data ?? []).map(mapArtwork);
+  return (data ?? [])
+    .map(mapArtwork)
+    .sort((a, b) => a.displayOrder - b.displayOrder || a.id - b.id);
 }
 
 export async function getArtworkById(id: number): Promise<Artwork | undefined> {
@@ -342,12 +334,7 @@ export async function createArtwork(data: {
   seriesId: number;
   title: string;
   year?: string;
-  technique: string;
-  heightCm?: number;
-  widthCm?: number;
-  availability: 'disponible' | 'coleccion_privada' | 'no_disponible';
   imagePath?: string;
-  microstory?: string;
   displayOrder?: number;
 }): Promise<number> {
   const { data: row, error } = await getSupabaseAdmin()
@@ -356,12 +343,7 @@ export async function createArtwork(data: {
       series_id: data.seriesId,
       title: data.title || 'Sin título',
       year: data.year || null,
-      technique: data.technique,
-      height_cm: data.heightCm ?? null,
-      width_cm: data.widthCm ?? null,
-      availability: data.availability || 'disponible',
       image_path: data.imagePath || null,
-      microstory: data.microstory || null,
       display_order: data.displayOrder ?? 0,
     })
     .select('id')
@@ -376,29 +358,21 @@ export async function updateArtwork(id: number, data: {
   seriesId: number;
   title: string;
   year?: string;
-  technique: string;
-  heightCm?: number;
-  widthCm?: number;
-  availability: 'disponible' | 'coleccion_privada' | 'no_disponible';
   imagePath?: string | null;
-  microstory?: string;
   displayOrder?: number;
 }): Promise<void> {
   const current = await getArtworkById(id);
+  const updateData: Database['public']['Tables']['artworks']['Update'] = {
+    series_id: data.seriesId,
+    title: data.title || 'Sin título',
+    year: data.year || null,
+    image_path: data.imagePath || null,
+  };
+  if (data.displayOrder !== undefined) updateData.display_order = data.displayOrder;
+
   const { error } = await getSupabaseAdmin()
     .from('artworks')
-    .update({
-      series_id: data.seriesId,
-      title: data.title || 'Sin título',
-      year: data.year || null,
-      technique: data.technique,
-      height_cm: data.heightCm ?? null,
-      width_cm: data.widthCm ?? null,
-      availability: data.availability,
-      image_path: data.imagePath || null,
-      microstory: data.microstory || null,
-      display_order: data.displayOrder ?? 0,
-    })
+    .update(updateData)
     .eq('id', id)
     .is('deleted_at', null);
 
@@ -410,6 +384,36 @@ export async function updateArtwork(id: number, data: {
     } catch (cleanupError) {
       console.warn('No se pudo eliminar la imagen anterior del Storage:', cleanupError);
     }
+  }
+}
+
+export async function reorderArtworks(seriesId: number, orderedIds: number[]): Promise<void> {
+  const { data, error } = await getSupabaseAdmin()
+    .from('artworks')
+    .select('id')
+    .eq('series_id', seriesId)
+    .is('deleted_at', null);
+
+  throwIfError(error);
+
+  const currentIds = new Set((data ?? []).map((row) => row.id));
+  if (
+    orderedIds.length !== currentIds.size
+    || new Set(orderedIds).size !== orderedIds.length
+    || orderedIds.some((id) => !currentIds.has(id))
+  ) {
+    throw new Error('La lista de obras no coincide con la serie');
+  }
+
+  for (const [index, id] of orderedIds.entries()) {
+    const { error: updateError } = await getSupabaseAdmin()
+      .from('artworks')
+      .update({ display_order: index + 1 })
+      .eq('id', id)
+      .eq('series_id', seriesId)
+      .is('deleted_at', null);
+
+    throwIfError(updateError);
   }
 }
 

@@ -32,13 +32,7 @@ create table if not exists public.artworks (
   series_id bigint not null references public.series(id) on delete restrict,
   title text not null default 'Sin título',
   year text,
-  technique text not null,
-  height_cm numeric,
-  width_cm numeric,
-  availability text not null default 'disponible'
-    check (availability in ('disponible', 'coleccion_privada', 'no_disponible')),
   image_path text,
-  microstory text,
   display_order integer not null default 0,
   created_at timestamptz not null default now(),
   deleted_at timestamptz

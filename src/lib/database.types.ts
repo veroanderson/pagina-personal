@@ -78,12 +78,7 @@ export type Database = {
           series_id: number;
           title: string;
           year: string | null;
-          technique: string;
-          height_cm: number | null;
-          width_cm: number | null;
-          availability: Database['public']['Enums']['availability'];
           image_path: string | null;
-          microstory: string | null;
           display_order: number;
           created_at: string;
           deleted_at: string | null;
@@ -93,12 +88,7 @@ export type Database = {
           series_id: number;
           title?: string;
           year?: string | null;
-          technique: string;
-          height_cm?: number | null;
-          width_cm?: number | null;
-          availability?: Database['public']['Enums']['availability'];
           image_path?: string | null;
-          microstory?: string | null;
           display_order?: number;
           created_at?: string;
           deleted_at?: string | null;
@@ -108,12 +98,7 @@ export type Database = {
           series_id?: number;
           title?: string;
           year?: string | null;
-          technique?: string;
-          height_cm?: number | null;
-          width_cm?: number | null;
-          availability?: Database['public']['Enums']['availability'];
           image_path?: string | null;
-          microstory?: string | null;
           display_order?: number;
           created_at?: string;
           deleted_at?: string | null;
@@ -221,9 +206,7 @@ export type Database = {
         Returns: undefined;
       };
     };
-    Enums: {
-      availability: 'disponible' | 'coleccion_privada' | 'no_disponible';
-    };
+    Enums: {};
     CompositeTypes: Record<string, never>;
   };
 };

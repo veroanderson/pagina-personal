@@ -9,12 +9,7 @@ interface Artwork {
   seriesId: number;
   title: string;
   year?: string | null;
-  technique: string;
-  heightCm?: number | null;
-  widthCm?: number | null;
-  availability: 'disponible' | 'coleccion_privada' | 'no_disponible';
   imageUrl?: string | null;
-  microstory?: string | null;
   displayOrder: number;
 }
 
@@ -32,8 +27,7 @@ export default function SeriesDetailClient({ series, artworks }: { series: Serie
 
   const handleInquire = (artwork: Artwork) => {
     const encodedTitle = encodeURIComponent(artwork.title);
-    const encodedTech = encodeURIComponent(`${artwork.technique}${artwork.year ? ` (${artwork.year})` : ''}`);
-    router.push(`/contacto?artworkId=${artwork.id}&title=${encodedTitle}&tech=${encodedTech}`);
+    router.push(`/contacto?artworkId=${artwork.id}&title=${encodedTitle}`);
   };
 
   return (
@@ -66,8 +60,13 @@ export default function SeriesDetailClient({ series, artworks }: { series: Serie
             <div
               key={artwork.id}
               onClick={() => setSelectedArtwork(artwork)}
-              className="py-8 lg:py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 cursor-pointer group hover:bg-surface-hover/40 transition px-2 lg:px-4"
+              className="py-8 lg:py-10 flex flex-col gap-4 cursor-pointer group hover:bg-surface-hover/40 transition px-2 lg:px-4"
             >
+              <h2 className="font-serif-editorial text-2xl lg:text-3xl text-ink font-normal group-hover:text-accent transition">
+                {artwork.title}
+              </h2>
+
+              <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               {/* Artwork Image (Full width on mobile, 250px on desktop) */}
               {artwork.imageUrl ? (
                 <div className="w-full md:w-64 h-64 md:h-44 overflow-hidden rounded border border-line bg-surface flex-shrink-0 group-hover:border-accent/60 transition">
@@ -83,52 +82,11 @@ export default function SeriesDetailClient({ series, artworks }: { series: Serie
                 </div>
               )}
 
-              {/* Artwork Metadata */}
-              <div className="flex-1 space-y-2">
-                <div className="flex flex-wrap items-center gap-3">
-                  <h2 className="font-serif-editorial text-2xl lg:text-3xl text-ink font-normal group-hover:text-accent transition">
-                    {artwork.title}
-                  </h2>
-                  {artwork.year && (
-                    <span className="text-sm font-mono text-ink-muted tabular-nums">
-                      ({artwork.year})
-                    </span>
-                  )}
-                </div>
-
-                <div className="text-sm text-ink-muted font-light">
-                  {artwork.technique}
-                  {(artwork.heightCm || artwork.widthCm) && (
-                    <span className="font-mono tabular-nums text-xs ml-3 text-ink-muted/80">
-                      • {artwork.heightCm || '?'} × {artwork.widthCm || '?'} cm
-                    </span>
-                  )}
-                </div>
-
-                {artwork.microstory && (
-                  <p className="text-xs lg:text-sm font-serif-editorial italic text-ink/70 line-clamp-2 pt-1">
-                    "{artwork.microstory}"
-                  </p>
-                )}
-              </div>
-
-              {/* Availability Badge & Click CTA */}
-              <div className="flex md:flex-col items-center md:items-end justify-between w-full md:w-auto gap-4 pt-2 md:pt-0 border-t md:border-t-0 border-line/40">
-                <span
-                  className={`text-xs px-3 py-1 rounded font-mono uppercase tracking-wider border ${
-                    artwork.availability === 'disponible'
-                      ? 'bg-success/15 text-success border-success/40'
-                      : artwork.availability === 'coleccion_privada'
-                      ? 'bg-danger/20 text-danger border-danger/40'
-                      : 'bg-surface-hover text-ink-muted border-line'
-                  }`}
-                >
-                  {artwork.availability.replace('_', ' ')}
-                </span>
-
+              <div className="flex md:flex-col items-center md:items-end justify-end w-full md:w-auto gap-4 pt-2 md:pt-0">
                 <span className="text-xs font-mono uppercase tracking-widest text-accent group-hover:underline">
                   Ver detalle ↗
                 </span>
+              </div>
               </div>
             </div>
           ))
@@ -186,48 +144,6 @@ export default function SeriesDetailClient({ series, artworks }: { series: Serie
                   )}
                 </div>
 
-                <div className="space-y-2 border-t border-b border-line py-4 text-sm font-light text-ink/90">
-                  <div>
-                    <span className="font-mono text-xs uppercase text-ink-muted block">Técnica y Soporte</span>
-                    {selectedArtwork.technique}
-                  </div>
-
-                  {(selectedArtwork.heightCm || selectedArtwork.widthCm) && (
-                    <div>
-                      <span className="font-mono text-xs uppercase text-ink-muted block">Dimensiones</span>
-                      <span className="font-mono tabular-nums">
-                        {selectedArtwork.heightCm || '?'} cm (alto) × {selectedArtwork.widthCm || '?'} cm (ancho)
-                      </span>
-                    </div>
-                  )}
-
-                  <div>
-                    <span className="font-mono text-xs uppercase text-ink-muted block">Estado</span>
-                    <span
-                      className={`inline-block mt-1 text-xs px-2.5 py-0.5 rounded font-mono uppercase border ${
-                        selectedArtwork.availability === 'disponible'
-                          ? 'bg-success/15 text-success border-success/40'
-                          : selectedArtwork.availability === 'coleccion_privada'
-                          ? 'bg-danger/20 text-danger border-danger/40'
-                          : 'bg-surface-hover text-ink-muted border-line'
-                      }`}
-                    >
-                      {selectedArtwork.availability.replace('_', ' ')}
-                    </span>
-                  </div>
-                </div>
-
-                {selectedArtwork.microstory && (
-                  <div className="space-y-1">
-                    <span className="font-mono text-xs uppercase tracking-wider text-accent block">
-                      Microrrelato / Diario de Proceso
-                    </span>
-                    <p className="font-serif-editorial text-lg italic text-ink/90 leading-relaxed">
-                      "{selectedArtwork.microstory}"
-                    </p>
-                  </div>
-                )}
-
                 {/* PRODUCTION-READY ACTION BUTTON */}
                 <div className="pt-2">
                   <button
@@ -237,9 +153,6 @@ export default function SeriesDetailClient({ series, artworks }: { series: Serie
                     <span>✉ Consultar sobre esta obra</span>
                     <span className="text-xs font-mono">→</span>
                   </button>
-                  <p className="text-xs font-mono text-ink-muted text-center mt-2">
-                    Pre-completa la consulta en la sección de contacto
-                  </p>
                 </div>
               </div>
             </div>

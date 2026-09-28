@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/features/admin-auth/auth';
-import { getArtworksBySeries, getArtworkById, createArtwork, updateArtwork, deleteArtwork } from '@/lib/db';
+import { getArtworksBySeries, getArtworkById, createArtwork, updateArtwork, deleteArtwork, reorderArtworks } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
   const authError = requireSession();
@@ -29,27 +29,31 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { seriesId, title, year, technique, heightCm, widthCm, availability, imagePath, imageUrl, microstory, displayOrder } = body;
+    if (Array.isArray(body.orderedIds)) {
+      const seriesId = Number(body.seriesId);
+      const orderedIds = (body.orderedIds as unknown[]).map((id) => Number(id));
 
-    if (!seriesId || !technique) {
-      return NextResponse.json({ error: 'seriesId y técnica son requeridos' }, { status: 400 });
+      if (!Number.isInteger(seriesId) || seriesId <= 0 || orderedIds.some((id) => !Number.isInteger(id) || id <= 0)) {
+        return NextResponse.json({ error: 'Serie u orden de obras inválido' }, { status: 400 });
+      }
+
+      await reorderArtworks(seriesId, orderedIds);
+      return NextResponse.json({ success: true });
     }
 
-    const validAvailability = ['disponible', 'coleccion_privada', 'no_disponible'].includes(availability)
-      ? availability
-      : 'disponible';
+    const { seriesId, title, year, imagePath, imageUrl } = body;
 
+    if (!seriesId) {
+      return NextResponse.json({ error: 'seriesId es requerido' }, { status: 400 });
+    }
+
+    const existingArtworks = await getArtworksBySeries(Number(seriesId));
     const newId = await createArtwork({
       seriesId: Number(seriesId),
       title: title || 'Sin título',
       year,
-      technique,
-      heightCm: heightCm ? Number(heightCm) : undefined,
-      widthCm: widthCm ? Number(widthCm) : undefined,
-      availability: validAvailability,
       imagePath: imagePath === undefined ? imageUrl : imagePath,
-      microstory,
-      displayOrder: Number(displayOrder) || 0
+      displayOrder: existingArtworks.length + 1
     });
 
     return NextResponse.json({ success: true, id: newId });
@@ -64,27 +68,17 @@ export async function PUT(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { id, seriesId, title, year, technique, heightCm, widthCm, availability, imagePath, imageUrl, microstory, displayOrder } = body;
+    const { id, seriesId, title, year, imagePath, imageUrl } = body;
 
-    if (!id || !seriesId || !technique) {
-      return NextResponse.json({ error: 'ID, seriesId y técnica son requeridos' }, { status: 400 });
+    if (!id || !seriesId) {
+      return NextResponse.json({ error: 'ID y seriesId son requeridos' }, { status: 400 });
     }
-
-    const validAvailability = ['disponible', 'coleccion_privada', 'no_disponible'].includes(availability)
-      ? availability
-      : 'disponible';
 
     await updateArtwork(Number(id), {
       seriesId: Number(seriesId),
       title: title || 'Sin título',
       year,
-      technique,
-      heightCm: heightCm ? Number(heightCm) : undefined,
-      widthCm: widthCm ? Number(widthCm) : undefined,
-      availability: validAvailability,
       imagePath: imagePath === undefined ? imageUrl : imagePath,
-      microstory,
-      displayOrder: Number(displayOrder) || 0
     });
 
     return NextResponse.json({ success: true });
