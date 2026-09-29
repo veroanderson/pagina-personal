@@ -8,18 +8,26 @@ import { useAdminAuth } from '../hooks/useAdminAuth';
 export default function LoginForm() {
   const router = useRouter();
   const { login } = useAdminAuth();
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
 
-  async function submit(event: React.FormEvent) {
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    // El autocompletado del navegador puede actualizar el input sin disparar
+    // onChange. Leer FormData evita depender de un estado React desactualizado.
+    const formData = new FormData(event.currentTarget);
+    const value = formData.get('password');
+    const submittedPassword = typeof value === 'string' ? value : '';
+
+    if (!submittedPassword.trim()) return;
+
     setPending(true);
     setError('');
 
     try {
-      const res = await login(password);
+      const res = await login(submittedPassword);
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
@@ -27,7 +35,6 @@ export default function LoginForm() {
         return;
       }
 
-      setPassword('');
       router.replace('/admin');
       router.refresh();
     } catch {
@@ -46,8 +53,6 @@ export default function LoginForm() {
             type={showPassword ? 'text' : 'password'}
             name="password"
             autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="Ingresá la clave de admin"
             className="pr-10 py-2.5"
@@ -71,7 +76,7 @@ export default function LoginForm() {
 
       <Button
         type="submit"
-        disabled={pending || !password}
+        disabled={pending}
         className="w-full shadow-panel"
       >
         {pending ? 'Ingresando...' : 'Ingresar'}
