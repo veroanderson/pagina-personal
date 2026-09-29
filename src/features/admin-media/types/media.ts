@@ -1,4 +1,4 @@
-export type AdminMediaEntity = 'artwork' | 'home' | 'manifesto';
+export type AdminMediaEntity = 'artwork' | 'home' | 'manifesto' | 'series-record';
 
 export interface UploadAdminMediaInput {
   entity: AdminMediaEntity;

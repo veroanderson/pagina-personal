@@ -105,6 +105,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      series_records: {
+        Row: {
+          id: number;
+          series_id: number;
+          title: string;
+          body_text: string | null;
+          image_path: string | null;
+          entry_date: string;
+          created_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          series_id: number;
+          title: string;
+          body_text?: string | null;
+          image_path?: string | null;
+          entry_date: string;
+          created_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          series_id?: number;
+          title?: string;
+          body_text?: string | null;
+          image_path?: string | null;
+          entry_date?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
       settings: {
         Row: {
           key: string;

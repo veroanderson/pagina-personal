@@ -5,6 +5,7 @@ import type { HomeTitlePosition } from '@/features/home/types/home';
 
 type SeriesRow = Database['public']['Tables']['series']['Row'];
 type ArtworkRow = Database['public']['Tables']['artworks']['Row'];
+type SeriesRecordRow = Database['public']['Tables']['series_records']['Row'];
 type ContactRequestRow = Database['public']['Tables']['contact_requests']['Row'];
 
 export interface Manifesto {
@@ -53,6 +54,18 @@ export interface Artwork {
   createdAt: string;
   deletedAt?: string | null;
   imagePath?: string | null;
+}
+
+export interface SeriesRecord {
+  id: number;
+  seriesId: number;
+  title: string;
+  bodyText?: string | null;
+  imageUrl?: string | null;
+  imagePath?: string | null;
+  entryDate: string;
+  createdAt: string;
+  deletedAt?: string | null;
 }
 
 export interface ContactRequest {
@@ -116,6 +129,20 @@ function mapArtwork(row: ArtworkRow): Artwork {
     imageUrl: publicImageUrl(row.image_path),
     imagePath: row.image_path,
     displayOrder: row.display_order,
+    createdAt: row.created_at,
+    deletedAt: row.deleted_at,
+  };
+}
+
+function mapSeriesRecord(row: SeriesRecordRow): SeriesRecord {
+  return {
+    id: row.id,
+    seriesId: row.series_id,
+    title: row.title,
+    bodyText: row.body_text,
+    imageUrl: publicImageUrl(row.image_path),
+    imagePath: row.image_path,
+    entryDate: row.entry_date,
     createdAt: row.created_at,
     deletedAt: row.deleted_at,
   };
@@ -420,6 +447,98 @@ export async function reorderArtworks(seriesId: number, orderedIds: number[]): P
 export async function deleteArtwork(id: number): Promise<void> {
   const { error } = await getSupabaseAdmin()
     .from('artworks')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', id)
+    .is('deleted_at', null);
+
+  throwIfError(error);
+}
+
+// --- SERIES RECORDS ---
+
+export async function getSeriesRecordsBySeries(seriesId: number): Promise<SeriesRecord[]> {
+  const { data, error } = await getSupabaseAdmin()
+    .from('series_records')
+    .select('*')
+    .eq('series_id', seriesId)
+    .is('deleted_at', null)
+    .order('entry_date', { ascending: false })
+    .order('id', { ascending: false });
+
+  throwIfError(error);
+  return (data ?? []).map(mapSeriesRecord);
+}
+
+export async function getSeriesRecordById(id: number): Promise<SeriesRecord | undefined> {
+  const { data, error } = await getSupabaseAdmin()
+    .from('series_records')
+    .select('*')
+    .eq('id', id)
+    .is('deleted_at', null)
+    .maybeSingle();
+
+  throwIfError(error);
+  return data ? mapSeriesRecord(data) : undefined;
+}
+
+export async function createSeriesRecord(data: {
+  seriesId: number;
+  title: string;
+  bodyText?: string;
+  imagePath?: string | null;
+  entryDate: string;
+}): Promise<number> {
+  const { data: row, error } = await getSupabaseAdmin()
+    .from('series_records')
+    .insert({
+      series_id: data.seriesId,
+      title: data.title,
+      body_text: data.bodyText || null,
+      image_path: data.imagePath || null,
+      entry_date: data.entryDate,
+    })
+    .select('id')
+    .single();
+
+  throwIfError(error);
+  if (!row) throw new Error('Supabase no devolvió el ID del registro');
+  return row.id;
+}
+
+export async function updateSeriesRecord(id: number, data: {
+  seriesId: number;
+  title: string;
+  bodyText?: string;
+  imagePath?: string | null;
+  entryDate: string;
+}): Promise<void> {
+  const current = await getSeriesRecordById(id);
+  const { error } = await getSupabaseAdmin()
+    .from('series_records')
+    .update({
+      series_id: data.seriesId,
+      title: data.title,
+      body_text: data.bodyText || null,
+      image_path: data.imagePath || null,
+      entry_date: data.entryDate,
+    })
+    .eq('id', id)
+    .is('deleted_at', null);
+
+  throwIfError(error);
+
+  if (current?.imagePath && current.imagePath !== (data.imagePath || null)) {
+    try {
+      await removeStorageObject(current.imagePath);
+    } catch (cleanupError) {
+      console.warn('No se pudo eliminar la imagen anterior del registro:', cleanupError);
+    }
+  }
+}
+
+export async function deleteSeriesRecord(id: number): Promise<void> {
+  const { error } = await getSupabaseAdmin()
+    .from('series_records')
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', id)
     .is('deleted_at', null);

@@ -184,6 +184,12 @@ export default function AdminSeriesPage() {
                 >
                   Obras ↗
                 </Link>
+                <Link
+                  href={`/admin/series/${item.id}/registros`}
+                  className="px-3 py-1.5 bg-line/60 hover:bg-line text-ink text-xs font-medium rounded transition"
+                >
+                  Registros ↗
+                </Link>
                 <button
                   onClick={() => openEditModal(item)}
                   className="px-3 py-1.5 bg-line/40 hover:bg-line text-ink text-xs font-medium rounded transition"

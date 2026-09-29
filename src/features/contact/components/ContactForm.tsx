@@ -1,0 +1,68 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Alert, Button, Input, Select, Textarea } from '@/shared/ui';
+
+export default function ContactForm() {
+  const searchParams = useSearchParams();
+  const artworkTitle = searchParams.get('title');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [requestType, setRequestType] = useState('Consulta sobre obra');
+  const [details, setDetails] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  useEffect(() => {
+    if (artworkTitle) {
+      setRequestType('Consulta sobre obra');
+      const titleDecoded = decodeURIComponent(artworkTitle);
+      setDetails(`Hola Vero,\n\nQuisiera consultar sobre la disponibilidad / adquisición de la obra "${titleDecoded}".\n\nAgradezco tu atención.`);
+    }
+  }, [artworkTitle]);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setMessage(null);
+    try {
+      const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, requestType, details }) });
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Tu mensaje fue enviado con éxito. Vero Anderson se pondrá en contacto a la brevedad.' });
+        setName(''); setEmail(''); if (!artworkTitle) setDetails('');
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || error.message || 'Error al enviar el mensaje. Por favor reintentá en un momento.' });
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Error de conexión. Verificá tu red e intentá nuevamente.' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="max-w-3xl space-y-10 lg:space-y-14">
+      <div className="space-y-3">
+        <span className="text-xs uppercase font-mono tracking-widest text-accent">Contacto Directo · Adquisiciones y Prensa</span>
+        <h1 className="font-serif-editorial text-3xl lg:text-5xl tracking-editorial text-ink font-normal leading-tight">Contacto</h1>
+        <div className="w-16 h-0.5 bg-accent/60" />
+        <p className="text-ink-muted text-base font-light pt-1">Para consultas sobre disponibilidad de obras, exhibiciones o proyectos especiales.</p>
+      </div>
+
+      {artworkTitle && <div className="p-4 bg-accent/10 border border-accent/40 rounded text-sm text-ink flex items-center justify-between"><span>Consultando por la obra: <strong className="font-serif-editorial text-lg text-accent-contrast">"{decodeURIComponent(artworkTitle)}"</strong></span></div>}
+      {message && <Alert tone={message.type === 'success' ? 'success' : 'danger'}>{message.text}</Alert>}
+
+      <form onSubmit={handleSubmit} className="space-y-6 bg-surface p-6 lg:p-10 rounded-lg border border-line shadow-panel">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div><label className="block text-sm font-medium text-ink mb-2">Tu Nombre Completo *</label><Input type="text" value={name} onChange={(event) => setName(event.target.value)} placeholder="Nombre y Apellido" required /></div>
+          <div><label className="block text-sm font-medium text-ink mb-2">Correo Electrónico *</label><Input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="tu@email.com" required /></div>
+        </div>
+        <div><label className="block text-sm font-medium text-ink mb-2">Tipo de Consulta</label><Select value={requestType} onChange={(event) => setRequestType(event.target.value)}><option value="Consulta sobre obra">Consulta sobre obra / Adquisición</option><option value="Exhibición / Curaduría">Exhibición / Curaduría</option><option value="Prensa / Entrevista">Prensa / Entrevista</option><option value="Otro motivo">Otro motivo</option></Select></div>
+        <div><label className="block text-sm font-medium text-ink mb-2">Mensaje o Detalles *</label><Textarea rows={7} value={details} onChange={(event) => setDetails(event.target.value)} placeholder="Escribí acá tu consulta..." required /></div>
+        <Button type="submit" disabled={submitting} size="lg" className="w-full font-serif-editorial text-xl tracking-wide shadow-panel active:scale-98">{submitting ? 'Enviando mensaje...' : 'Enviar Consulta →'}</Button>
+      </form>
+    </div>
+  );
+}
