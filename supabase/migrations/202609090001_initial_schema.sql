@@ -1,4 +1,4 @@
--- Portfolio Vero Anderson - Supabase baseline schema
+-- Portfolio Veronica Anderson - Supabase baseline schema
 --
 -- This migration intentionally uses snake_case PostgreSQL names. The application
 -- adapter will map them to the existing TypeScript camelCase interface later.

@@ -3,7 +3,7 @@ import { getManifesto } from '@/lib/db';
 import type { HomeContent } from '../types/home';
 
 const DEFAULT_HOME_CONTENT: HomeContent = {
-  eyebrow: 'Vero Anderson · Artista visual',
+  eyebrow: 'Veronica Anderson · Artista visual',
   title: 'La contemplación del horizonte y la botánica de campo.',
   imageSrc: '/images/home.png',
   titlePosition: 'top-left',

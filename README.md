@@ -1,4 +1,4 @@
-# Portfolio Vero Anderson
+# Portfolio Veronica Anderson
 
 Portfolio editorial construido con Next.js 14, React, Tailwind y Supabase.
 La base de datos y las imágenes se almacenan en el proyecto Supabase configurado

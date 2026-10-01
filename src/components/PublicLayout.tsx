@@ -31,7 +31,7 @@ export default function PublicLayout({ children, fullBleed = false }: PublicLayo
             <path d="M12 6c3 0 6 3 6 6s-3 6-6 6-6-3-6-6 3-6 6-6z" strokeWidth="1" />
           </svg>
           <span className="font-serif-editorial text-xl tracking-editorial text-ink font-normal uppercase">
-            Vero Anderson
+            Veronica Anderson
           </span>
         </Link>
 
@@ -71,7 +71,7 @@ export default function PublicLayout({ children, fullBleed = false }: PublicLayo
                 </span>
               </div>
               <h1 className="font-serif-editorial text-3xl tracking-editorial text-ink font-normal uppercase leading-tight">
-                Vero Anderson
+                Veronica Anderson
               </h1>
             </Link>
             <p className="font-cursive-gestual text-xl text-ink-muted italic leading-relaxed">
@@ -105,7 +105,7 @@ export default function PublicLayout({ children, fullBleed = false }: PublicLayo
         <div className="space-y-3 pt-8 border-t border-line/40 text-xs font-mono text-ink-muted">
           <div>Patagonia, Argentina</div>
           <div className="flex items-center justify-between">
-            <span>© {new Date().getFullYear()} Vero Anderson</span>
+            <span>© {new Date().getFullYear()} Veronica Anderson</span>
             <Link href="/admin" className="hover:text-ink transition opacity-40 hover:opacity-100">
               [Admin]
             </Link>

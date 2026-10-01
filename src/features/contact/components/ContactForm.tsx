@@ -29,7 +29,7 @@ export default function ContactForm() {
     try {
       const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, requestType, details }) });
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Tu mensaje fue enviado con éxito. Vero Anderson se pondrá en contacto a la brevedad.' });
+        setMessage({ type: 'success', text: 'Tu mensaje fue enviado con éxito. Veronica Anderson se pondrá en contacto a la brevedad.' });
         setName(''); setEmail(''); if (!artworkTitle) setDetails('');
       } else {
         const error = await response.json();

@@ -12,8 +12,8 @@ const fontCursive = Caveat({ subsets: ['latin'], weight: ['400', '700'], variabl
 const fontSans = Inter({ subsets: ['latin'], weight: ['300', '400', '500', '600'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: 'Vero Anderson | Artista Visual · Portfolio',
-  description: 'Portfolio de la artista visual Vero Anderson. Obras, series, manifiesto y biografía.',
+  title: 'Veronica Anderson | Artista Visual · Portfolio',
+  description: 'Portfolio de la artista visual Veronica Anderson. Obras, series, manifiesto y biografía.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

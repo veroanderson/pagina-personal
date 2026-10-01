@@ -16,7 +16,7 @@ export default function LoginPage() {
         </div>
         <div className="space-y-2 text-center">
           <span className="font-serif-editorial text-2xl tracking-widest text-accent font-medium block uppercase">
-            VERO ANDERSON
+            VERONICA ANDERSON
           </span>
           <h1 className="text-xl font-normal text-ink">Acceso de Administración</h1>
           <p className="text-xs text-ink-muted">Ingresá la clave del panel de gestión.</p>

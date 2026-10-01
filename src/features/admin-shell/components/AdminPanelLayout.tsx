@@ -16,7 +16,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between px-4 py-2">
           <div className="flex items-center gap-3">
             <span className="font-serif-editorial text-lg tracking-widest text-accent font-semibold">
-              VERO ANDERSON
+              VERONICA ANDERSON
             </span>
             <span className="text-xs uppercase tracking-widest px-2 py-0.5 rounded bg-surface-hover text-ink-muted font-mono">
               Admin Panel

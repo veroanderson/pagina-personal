@@ -127,7 +127,7 @@ export default function AdminSeriesPage() {
             Series (Colecciones Temáticas)
           </h1>
           <p className="text-sm text-ink-muted mt-1">
-            Administrá las colecciones artísticas de Vero Anderson.
+            Administrá las colecciones artísticas de Veronica Anderson.
           </p>
         </div>
 

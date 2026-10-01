@@ -30,7 +30,7 @@ export function MobileNavigationMenu({ isOpen, onClose }: MobileNavigationMenuPr
     <nav className="lg:hidden fixed inset-0 z-50 flex min-h-[100dvh] flex-col bg-canvas px-6 py-6 text-center">
       <div className="flex items-center justify-between">
         <Link href="/" onClick={onClose} className="font-serif-editorial text-sm uppercase tracking-[0.2em] text-ink-muted">
-          Vero Anderson
+          Veronica Anderson
         </Link>
         <button onClick={onClose} className="p-2 text-ink hover:text-accent focus:outline-none" aria-label="Cerrar menú">
           <span className="block text-4xl font-light leading-none">×</span>
